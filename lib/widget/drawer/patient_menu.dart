@@ -38,7 +38,7 @@ class PatientMenu extends StatelessWidget {
           DrawerItem(
             name: 'My visits',
             icon: Icons.date_range,
-            nav: NavigationPage.Appointment,
+            nav: NavigationPage.MyVisits,
             args: '',
             isReplaced: false,
           ),
@@ -62,6 +62,7 @@ class PatientMenu extends StatelessWidget {
             name: 'Logout',
             icon: Icons.exit_to_app,
             nav: NavigationPage.SignIn,
+            isReplaced: false,
           ),
         ],
       ),

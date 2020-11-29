@@ -111,7 +111,7 @@ class _MyFamilyState extends State<MyFamily> {
               "strLastName": relativeDetail.strlname,
               "strGender": relativeDetail.strgender,
               "intModifiedBy": DateFormat('dd/MM/yyyy').format(DateTime.now()),
-              "strEmail": relativeDetail.stremail,
+              "strEmail": null, //relativeDetail.stremail,
               "strDOB": relativeDetail.strdob,
               "intRoleId": 3,
               "CH_Unique_ID": "",

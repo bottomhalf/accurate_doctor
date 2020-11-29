@@ -1,3 +1,9 @@
+import 'package:accurate_doctor/modal/personal_detail.dart';
+import 'package:accurate_doctor/provider/localDb.dart';
+import 'package:accurate_doctor/widget/myprofile/personal_detail.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sqflite/sqflite.dart';
+
 import '../widget/common/transparent_loader.dart';
 import '../modal/user_detail.dart';
 import '../services/ajax_call.dart';
@@ -23,6 +29,7 @@ class _SignInPageState extends State<SignInPage> {
   bool privacyPolicyFlag = false;
   double pageHeight = 0;
   AjaxCall http;
+  LocalDb db;
 
   void togglePolicy(bool policyFlag) {
     privacyPolicyFlag = policyFlag;
@@ -30,7 +37,31 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   void initState() {
-    http = AjaxCall.getInstance;
+    setState(() {
+      isFormSubmitted = true;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      http = AjaxCall.getInstance;
+      db = LocalDb.internal();
+      db.initDb().then((value) {
+        if (value) {
+          print('Checking');
+          PersonalDetailModal.userExists().then((value) {
+            if (value) {
+              print('User exists');
+              Navigator.of(context)
+                  .pushReplacementNamed(NavigationPage.Dashboard);
+            } else {
+              print('User not exists');
+              setState(() {
+                isFormSubmitted = false;
+              });
+            }
+          });
+        }
+      });
+    });
   }
 
   void showInvalidMesssage(String title, String message) {
@@ -82,11 +113,60 @@ class _SignInPageState extends State<SignInPage> {
           this.showInvalidMesssage(
               'Login error', 'Incorrect username or password.');
           return;
-        }
+        } else {
+          PersonalDetailModal personalDetail;
+          print('Getting Profile detail...');
+          http
+              .get("PatientProfile/GetPatientProfileInfo/${userDetail.UserId}")
+              .then((value) {
+            if (value != null) {
+              var data = json.decode(value);
+              personalDetail = PersonalDetailModal.fromJson(data);
 
-        Future.delayed(const Duration(seconds: 0), () {
-          Navigator.of(context).pushReplacementNamed(NavigationPage.Dashboard);
-        });
+              String values = ''' values(
+            ${userDetail.UserId},
+            '${personalDetail.strFirstName}',
+            '${personalDetail.strLastName}',
+            '${personalDetail.strGender}',
+            '${personalDetail.strDOB}',
+            '${personalDetail.strMobileNo}',
+            '${personalDetail.strEmail}',
+            '${personalDetail.strExperience}',
+            '${personalDetail.strImagePath}',
+            '${personalDetail.strUserName}',
+            ${personalDetail.intRoleId},
+            '${personalDetail.strTitle}',
+            '${personalDetail.strMiddleName}',
+            '${personalDetail.strAddress}',
+            '${personalDetail.strZipCode}',
+            '${userDetail.customerId}') ''';
+
+              personalDetail
+                  .insertValue(values, userDetail.UserId)
+                  .then((value) {
+                if (value) {
+                  Future.delayed(const Duration(seconds: 0), () {
+                    PersonalDetailModal.userExists().then((value) {
+                      if (value) {
+                        print('User exists');
+                        Navigator.of(context)
+                            .pushReplacementNamed(NavigationPage.Dashboard);
+                      } else {
+                        print('User not exists');
+                        setState(() {
+                          isFormSubmitted = false;
+                        });
+                      }
+                    });
+                  });
+                } else {
+                  Fluttertoast.showToast(
+                      msg: 'Server error. Please contact admin.');
+                }
+              });
+            }
+          });
+        }
       });
     }
   }
@@ -106,7 +186,7 @@ class _SignInPageState extends State<SignInPage> {
         Scaffold(
           body: Padding(
             padding: const EdgeInsets.only(
-              top: 60,
+              top: 40,
               left: 40,
               right: 40,
               bottom: 10,
@@ -120,17 +200,14 @@ class _SignInPageState extends State<SignInPage> {
                 child: ListView(
                   //crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      'Accurate Doctor',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 35,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      margin: EdgeInsets.only(bottom: 12),
+                      child: Center(
+                        child: Image.asset(
+                          "assets/img/logo.png",
+                          width: Configuration.width * .5,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '(Logo required)',
-                      textAlign: TextAlign.center,
                     ),
                     SizedBox(
                       height: 10,

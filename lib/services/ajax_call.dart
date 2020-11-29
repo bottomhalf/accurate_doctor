@@ -34,7 +34,7 @@ class AjaxCall {
     http.Response response = await http.post(baseUrl + url,
         headers: this.postHeader(), body: json.encode(data));
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print(response.body);
+      print('Response: ${response.body}');
       return response.body;
     } else {
       print('Post request failed: ${response.body}');
@@ -64,11 +64,27 @@ class AjaxCall {
   Future<String> get(String url) async {
     http.Response response = await http.get(baseUrl + url);
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print(response.body);
+      print('Response: ${response.body}');
       return response.body;
     } else {
       print('Get request failed: $response');
       return null;
     }
+  }
+
+  Future<String> submit() async {
+    String result;
+    await Future.delayed(Duration(milliseconds: 20)).then((value) {
+      print(value);
+    });
+/*    var uri = Uri.parse('https://example.com/create');
+    var request = http.MultipartRequest('POST', uri)
+      ..fields['user'] = 'nweiz@google.com'
+      ..files.add(await http.MultipartFile.fromPath(
+          'package', 'build/package.tar.gz',
+          contentType: MediaType('application', 'x-tar')));
+    var response = await request.send();
+    if (response.statusCode == 200) print('Uploaded!');*/
+    return result;
   }
 }

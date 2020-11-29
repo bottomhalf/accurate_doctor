@@ -23,4 +23,6 @@ class NavigationPage {
   static const String Subscription = '/subscription';
   static const String HealthSummary = '/healthsummary';
   static const String CaregiverCalendar = "/caregivercalendar";
+  static const String LoadingScreen = "/loadingScreen";
+  static const String MyVisits = "/myvisits";
 }

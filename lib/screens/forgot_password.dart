@@ -31,10 +31,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         isSubmited = !isSubmited;
       });
       Future.delayed(Duration(seconds: 1)).then((value) {
-        http.post("Login/PatientForgotPassword", {
-          "strEmail": email.text.trim(),
-          "mailto": email.text.trim()
-        }).then((value) {
+        http.post("Login/PatientForgotPassword",
+            {"strEmail": email.text.trim(), "mailto": "Yes"}).then((value) {
           var userDetail = json.decode(value);
           setState(() {
             isSubmited = !isSubmited;

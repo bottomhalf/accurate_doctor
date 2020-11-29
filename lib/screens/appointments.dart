@@ -109,6 +109,7 @@ class _AppointmentState extends State<Appointment> {
     } else {
       print('empty search data');
       setState(() {
+        searchString = searchValue;
         appointmentDetails = [];
         isLoadingCompleted = false;
       });
@@ -129,6 +130,7 @@ class _AppointmentState extends State<Appointment> {
         this.loadData(args);
       } else {
         setState(() {
+          searchString = '';
           isLoadingCompleted = true;
         });
         this.loadData('');
@@ -173,6 +175,7 @@ class _AppointmentState extends State<Appointment> {
       appBar: DashboardAppBar(
         appBarHeader: 'Appointment',
         searchResult: fetchData,
+        defaultSearchText: searchString,
       ),
       body: RefreshIndicator(
         onRefresh: _pullRefreshedData,

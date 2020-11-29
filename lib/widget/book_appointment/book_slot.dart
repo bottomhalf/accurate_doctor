@@ -74,7 +74,7 @@ class _BookSlotState extends State<BookSlot> {
           "strBookedBy": this.bookingSlotModal.strEmail,
           "strDoctorEmailId": this.bookingSlotModal.strDoctorEmailId,
           "strDoctorName": this.bookingSlotModal.strDoctorName,
-          "strSourceOne": this.bookingSlotModal.strSourceOne,
+          "strSourceOne": "M",
           "intCreatedBy": this.bookingSlotModal.intCreatedBy,
           "intBranchId": this.bookingSlotModal.intBranchId,
           "strOrganizationName": this.bookingSlotModal.strOrganizationName,
@@ -206,68 +206,6 @@ class _BookSlotState extends State<BookSlot> {
                     modal: bookingSlotModal,
                   ),
                 ),
-                /*Container(
-                  padding: EdgeInsets.all(Configuration.pagePadding),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.wb_sunny),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            'Morning',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: 4,
-                        ),
-                        child: BuildSlots(
-                          slots: widget.slots,
-                          isMorning: true,
-                          modal: bookingSlotModal,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.brightness_4,
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            'Evening',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          top: 4,
-                        ),
-                        child: BuildSlots(
-                          slots: widget.slots,
-                          isMorning: false,
-                          modal: bookingSlotModal,
-                        ),
-                      ),
-                    ],
-                  ),
-                )*/
                 Container(
                   padding: EdgeInsets.all(Configuration.pagePadding),
                   child: Column(

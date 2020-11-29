@@ -19,6 +19,23 @@ class UserDetail {
   int _state = -1;
   String _country = "";
   int _userId;
+  String _exerience;
+  String _imagePath;
+  int _roleId;
+  String _title;
+  String _middleName;
+  String _uniqueId;
+
+  @override
+  String toString() {
+    return 'UserDetail{_FullName: $_FullName, _userName: $_userName, _firstName: $_firstName, _lastName: $_lastName, _appointmentId: $_appointmentId, _address: $_address, _DateOfBirth: $_DateOfBirth, _Gender: $_Gender, _Email: $_Email, _MobileNo: $_MobileNo, _Password: $_Password, _customerId: $_customerId, _statusCode: $_statusCode, isDoctor: $isDoctor, _age: $_age, _pincode: $_pincode, _city: $_city, _state: $_state, _country: $_country, _userId: $_userId, _exerience: $_exerience, _imagePath: $_imagePath, _roleId: $_roleId, _title: $_title, _middleName: $_middleName, _uniqueId: $_uniqueId}';
+  }
+
+  String get exerience => _exerience;
+
+  set exerience(String value) {
+    _exerience = value;
+  }
 
   int get UserId => _userId;
 
@@ -160,5 +177,35 @@ class UserDetail {
     userDetail.Email = parsedData['strusername'];
     userDetail.UserId = parsedData['intchcustomerid'];
     return userDetail;
+  }
+
+  String get imagePath => _imagePath;
+
+  set imagePath(String value) {
+    _imagePath = value;
+  }
+
+  int get roleId => _roleId;
+
+  set roleId(int value) {
+    _roleId = value;
+  }
+
+  String get title => _title;
+
+  set title(String value) {
+    _title = value;
+  }
+
+  String get middleName => _middleName;
+
+  set middleName(String value) {
+    _middleName = value;
+  }
+
+  String get uniqueId => _uniqueId;
+
+  set uniqueId(String value) {
+    _uniqueId = value;
   }
 }

@@ -1,7 +1,6 @@
+import '../../widget/dashboard/filter_bar.dart';
 import 'package:flutter/widgets.dart';
-
 import '../../modal/user_detail.dart';
-import '../../navigation/NavigationPage.dart';
 import '../../modal/Configuration.dart';
 import '../../provider/dashboard_header_menu.dart';
 import '..//dashboard/header_bar.dart';
@@ -13,8 +12,13 @@ class DashboardAppBar extends StatefulWidget with PreferredSizeWidget {
   final String appBarHeader;
   bool isFocused;
   Function searchResult;
+  String defaultSearchText;
   DashboardAppBar(
-      {Key key, this.appBarHeader, this.searchResult, this.isFocused = false})
+      {Key key,
+      this.appBarHeader,
+      this.searchResult,
+      this.isFocused = false,
+      this.defaultSearchText})
       : preferredSize = Size.fromHeight(Configuration.height * .25),
         super(key: key);
 
@@ -28,7 +32,6 @@ class DashboardAppBar extends StatefulWidget with PreferredSizeWidget {
 class _DashboardAppBarState extends State<DashboardAppBar> {
   final _searchBox = FocusNode();
   String currentPage;
-  final _searchFilterController = TextEditingController();
   var headerMenuItem = [];
   int itemCount;
   UserDetail userDetail;
@@ -36,6 +39,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
 
   @override
   void initState() {
+    super.initState();
     userDetail = UserDetail.instance;
     Configuration.isDoctor = userDetail.isDoctor;
     var dashboardHeaderMenu = DashboardHeaderMenu();
@@ -44,7 +48,6 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
       itemCount = headerMenuItem.length;
     else
       itemCount = 0;
-    super.initState();
   }
 
   @override
@@ -78,43 +81,8 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchFilterController,
-                        focusNode: widget.isFocused ? _searchBox : null,
-                        maxLines: 2,
-                        style: TextStyle(
-                          height: 1.2,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Seach by Hospital/Doctor',
-                          isDense: true,
-                          contentPadding: EdgeInsets.only(
-                            top: 10,
-                          ),
-                          filled: true,
-                          border: InputBorder.none,
-                          fillColor: Colors.white,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      alignment: Alignment.centerRight,
-                      icon: Icon(
-                        Icons.search,
-                        size: 16,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(
-                            NavigationPage.Appointment,
-                            arguments: _searchFilterController.text);
-                      },
-                    )
-                  ],
+                child: FilterBat(
+                  defaultText: widget.defaultSearchText,
                 ),
               ),
               HeaderBar(this.userDetail?.firstName, 'India'),

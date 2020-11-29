@@ -1,4 +1,12 @@
+import 'package:accurate_doctor/modal/user_detail.dart';
+
+import '../provider/localDb.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:convert';
+
 class PersonalDetailModal {
+  static const UserDetailTable = 'userdetail';
+
   int _intUserId;
   int _intAppointmentId;
   String _strFirstName;
@@ -143,6 +151,78 @@ class PersonalDetailModal {
         else if (index == 10)
           personalDetail.strZipCode = splittedAddress.elementAt(index);
         index++;
+      }
+    }
+  }
+
+  static Future<bool> userExists() async {
+    bool flag = false;
+    LocalDb local = LocalDb.internal();
+    Database db = local.db;
+    bool status = await local.isTableExists(UserDetailTable);
+    if (status) {
+      var data = await db.rawQuery("select * from ${UserDetailTable}");
+      if (data.length > 0) {
+        dynamic userResult = data[0];
+        UserDetail userDetail = UserDetail.instance;
+        userDetail.UserId = userResult['UserId'];
+        userDetail.firstName = userResult['strFirstName'];
+        userDetail.lastName = userResult['strLastName'];
+        userDetail.Gender = userResult['strGender'];
+        userDetail.DateOfBirth = userResult['strDOB'] != null
+            ? DateTime.parse(userResult['strDOB'])
+            : null;
+        userDetail.MobileNo = userResult['strMobileNo'];
+        userDetail.Email = userResult['strEmail'];
+        userDetail.exerience = userResult['strExperience'];
+        userDetail.imagePath = userResult['strImagePath'];
+        userDetail.userName = userResult['strUserName'];
+        userDetail.roleId = userResult['intRoleId'];
+        userDetail.title = userResult['strTitle'];
+        userDetail.middleName = userResult['strMiddleName'];
+        userDetail.address = userResult['strAddress'];
+        userDetail.Pincode = userResult['strZipCode'];
+        userDetail.uniqueId = userResult['HealthyGx_Unique_ID'];
+        userDetail.isDoctor = false;
+        userDetail.customerId = userDetail.uniqueId;
+        //print('Data: ${userDetail.toString()}');
+        flag = true;
+      }
+    }
+    return flag;
+  }
+
+  Future<bool> insertValue(String insertData, int userId) async {
+    LocalDb local = LocalDb.internal();
+    Database db = local.db;
+    bool state = await local.isTableExists(UserDetailTable);
+    if (state) {
+      var data = await db
+          .rawQuery("select * from ${UserDetailTable} where UserId = $userId");
+      if (data.length > 0) {
+        var status = await db
+            .rawDelete("delete from ${UserDetailTable} where UserId = $userId");
+        print('Record delete state: $status');
+      }
+
+      int insertState =
+          await db.rawInsert('''Insert into ${UserDetailTable} $insertData ''');
+      if (insertState > 0) {
+        print('Status: $insertState');
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      print('Creating...');
+      local.onCreate(db, 1);
+      int insertState =
+          await db.rawInsert('''Insert into ${UserDetailTable} $insertData ''');
+      if (insertState > 0) {
+        print('Status: $insertState');
+        return true;
+      } else {
+        return false;
       }
     }
   }

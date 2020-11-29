@@ -1,6 +1,8 @@
 import 'package:accurate_doctor/screens/book_appointment.dart';
 import 'package:accurate_doctor/screens/caregiver_calendar.dart';
 import 'package:accurate_doctor/screens/health_summary.dart';
+import 'package:accurate_doctor/screens/loading_screen.dart';
+import 'package:accurate_doctor/screens/my_visits.dart';
 import 'package:accurate_doctor/screens/subscription.dart';
 
 import './modal/Configuration.dart';
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Accurate Doctor',
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         accentColor: Configuration.ColorFromHex('#31216F'),
@@ -93,9 +95,11 @@ class MyApp extends StatelessWidget {
         NavigationPage.HealthSummary: (_) => HealthSummary(),
         NavigationPage.Subscription: (_) => Subscription(),
         NavigationPage.CaregiverCalendar: (_) => CaregiverCalendar(),
+        NavigationPage.LoadingScreen: (_) => LoadingScreen(),
+        NavigationPage.MyVisits: (_) => MyVisit(),
       },
       onUnknownRoute: (setting) {
-        return MaterialPageRoute(builder: (ctx) => SignInPage());
+        return MaterialPageRoute(builder: (ctx) => LoadingScreen());
       },
     );
   }

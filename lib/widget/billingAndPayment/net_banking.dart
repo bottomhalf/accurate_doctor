@@ -1,9 +1,11 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:convert';
 
 class NetBankingCard extends StatefulWidget {
   double amount;
@@ -19,9 +21,9 @@ class NetBankingCard extends StatefulWidget {
       this.date,
       this.time,
       this.location}) {
-    print(
+/*    print(
         'Amount: $amount, AppointmentId: $appointmentId, doctorName: $doctorName, '
-        'date: $date, time: $time, location: $location');
+        'date: $date, time: $time, location: $location');*/
   }
 
   @override
@@ -32,6 +34,7 @@ class _NetBankingCardState extends State<NetBankingCard> {
   Razorpay _razorpay;
   double _payableAmount;
   String _appointmentId;
+  String _orderId;
 
   @override
   void initState() {
@@ -54,22 +57,41 @@ class _NetBankingCardState extends State<NetBankingCard> {
   }
 
   void openCheckout() async {
-    var options = {
-      'key': 'rzp_live_bUVQEjF4AGSaxo',
-      'amount': 100,
-      'name': 'Istiyak',
-      'description': 'Fine T-Shirt',
-      'prefill': {'contact': '9100544384', 'email': 'istiyaq.4game@gmail.com'},
-      'external': {
-        'wallets': ['paytm']
-      }
-    };
+    AjaxCall http = AjaxCall.getInstance;
+    http.post("AppointmentsCommon/PaymentGatewayordercreate", {
+      "amount": 100, //widget.amount,
+      "currency": "INR",
+      "rcptid": "Receipt" + widget.appointmentId
+    }).then((orderId) {
+      print(
+          'Order id: ${orderId.toString().replaceAll("\"", "").trim()}  ------------------->');
+      if (orderId != null) {
+        this._orderId = orderId.toString().replaceAll("\"", "").trim();
+        UserDetail userDetail = UserDetail.instance;
+        var options = {
+          'key': 'rzp_live_bUVQEjF4AGSaxo',
+          'amount': 100,
+          'name': userDetail.firstName,
+          'order_id': this._orderId,
+          'description': 'Appointment booking',
+          'prefill': {
+            'contact': userDetail.MobileNo,
+            'email': userDetail.Email
+          },
+          'external': {
+            'wallets': ['paytm']
+          }
+        };
 
-    try {
-      _razorpay.open(options);
-    } catch (e) {
-      debugPrint(e);
-    }
+        try {
+          _razorpay.open(options);
+        } catch (e) {
+          debugPrint(e);
+        }
+      } else {
+        Fluttertoast.showToast(msg: 'Not able ');
+      }
+    });
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
@@ -78,8 +100,7 @@ class _NetBankingCardState extends State<NetBankingCard> {
       AjaxCall http = AjaxCall.getInstance;
       http
           .get(
-              'http://iseniorcare1.healthygx.com/api/AppointmentsCommon/SavePaymentGatewayDetails/'
-              '${response.orderId}/${widget.appointmentId}')
+              'AppointmentsCommon/SavePaymentGatewayDetails/${this._orderId}/${widget.appointmentId}')
           .then((value) {
         Fluttertoast.showToast(msg: "Done successfully");
       });
@@ -92,7 +113,6 @@ class _NetBankingCardState extends State<NetBankingCard> {
     try {
       String message =
           "ERROR: " + response.code.toString() + " - " + response.message;
-      print(message);
       Fluttertoast.showToast(msg: response.message);
     } catch (ex) {
       print('ShowToast error');

@@ -1,5 +1,7 @@
 import 'package:accurate_doctor/modal/map.dart';
+import 'package:accurate_doctor/modal/personal_detail.dart';
 import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:accurate_doctor/provider/localDb.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
@@ -74,12 +76,21 @@ class _DrawerItemState extends State<DrawerItem> {
                   Navigator.of(context).pushReplacementNamed(this.widget.nav,
                       arguments: widget.args);
                 } else {
+                  print('Testing: ${this.widget.name}');
                   switch (this.widget.name) {
                     case 'Logout':
-                      UserDetail.destroy = null;
-                      Navigator.of(context).pop();
-                      Navigator.of(context)
-                          .pushReplacementNamed(this.widget.nav);
+                      LocalDb local = LocalDb.internal();
+                      UserDetail userDetail = UserDetail.instance;
+                      local
+                          .deleteById(PersonalDetailModal.UserDetailTable,
+                              userDetail.UserId)
+                          .then((value) {
+                        if (value) {
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Navigator.of(context)
+                              .pushReplacementNamed(this.widget.nav);
+                        }
+                      });
                       break;
                     default:
                       Navigator.of(context).pop();

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/personal_detail.dart';
+import 'package:accurate_doctor/navigation/Constants.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -82,6 +83,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
         });
       }
     });
+
     http.get("Common/GetState/1").then((value) {
       if (value != null) {
         states = json.decode(value);
@@ -105,11 +107,16 @@ class _PersonalDetailState extends State<PersonalDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.personalDetail != null)
+    if (widget.personalDetail != null) {
       personalDetail = PersonalDetailModal.fromJson(widget.personalDetail);
-    else
+    } else
       personalDetail = PersonalDetailModal();
     this.BindDropdown(personalDetail);
+  }
+
+  String _getGenderInitialValue() {
+    this.convertGenderType(personalDetail.strGender);
+    return null;
   }
 
   void _onFormSubmitted() {
@@ -122,7 +129,6 @@ class _PersonalDetailState extends State<PersonalDetail> {
       });
 
       try {
-        print('Request data: ${this.personalDetail.toString()}');
         http = AjaxCall.getInstance;
         http.post("Registration/PatientRegistration", {
           "intUserId": userDetail.UserId,
@@ -198,16 +204,30 @@ class _PersonalDetailState extends State<PersonalDetail> {
     }
   }
 
-  void handlerSelectedGender(int gender) {
-    if (gender == 1) {
+  void handlerSelectedGender(MappedGender gender) {
+    if (gender == MappedGender.Male) {
       selectedGender.text = 'Male';
-    } else if (gender == 2) {
+      this.personalDetail.strGender = MappedGender.Male.index.toString();
+    } else if (gender == MappedGender.Female) {
       selectedGender.text = 'Female';
+      this.personalDetail.strGender = MappedGender.Female.index.toString();
     } else {
       selectedGender.text = 'Other';
+      this.personalDetail.strGender = MappedGender.Other.index.toString();
     }
+  }
 
-    this.personalDetail.strGender = selectedGender.text;
+  void convertGenderType(String gender) {
+    if (gender == 'M' || gender == '2') {
+      selectedGender.text = 'Male';
+      this.personalDetail.strGender = MappedGender.Male.index.toString();
+    } else if (gender == 'F' || gender == '1') {
+      selectedGender.text = 'Female';
+      this.personalDetail.strGender = MappedGender.Female.index.toString();
+    } else {
+      selectedGender.text = 'Other';
+      this.personalDetail.strGender = MappedGender.Other.index.toString();
+    }
   }
 
   void getGenderPicker() {
@@ -256,7 +276,6 @@ class _PersonalDetailState extends State<PersonalDetail> {
 
   String getInitDob() {
     String dateValue = null;
-    print('Dob: ${this.personalDetail.strDOB}');
     if (this.personalDetail.strDOB != null) {
       try {
         selectedDate.text = DateFormat('dd/MM/yyyy')
@@ -267,10 +286,6 @@ class _PersonalDetailState extends State<PersonalDetail> {
       }
     }
 
-    if (this.personalDetail.strGender != null) {
-      selectedGender.text =
-          this.personalDetail.strGender == "Female" ? "Female" : "Male";
-    }
     return null;
   }
 
@@ -305,7 +320,14 @@ class _PersonalDetailState extends State<PersonalDetail> {
   Future<void> _getPicture() async {
     try {
       ImagePicker _picker = ImagePicker();
-      final pickedFile = await _picker.getImage(source: ImageSource.camera);
+      final pickedFile = await _picker.getImage(source: ImageSource.gallery);
+      String base64Data;
+      pickedFile.readAsBytes().then((value) {
+        List<int> imageBytes = value;
+        base64Data = base64Encode(imageBytes);
+        print('Image: $base64Data');
+      });
+
       setState(() {
         isPictureAval = true;
         _filePath = File(pickedFile.path);
@@ -437,10 +459,11 @@ class _PersonalDetailState extends State<PersonalDetail> {
                         ),
                       ),
                       readOnly: true,
+                      initialValue: _getGenderInitialValue(),
                       controller: selectedGender,
                       textAlign: TextAlign.start,
                       focusNode: _gender,
-                      keyboardType: TextInputType.text,
+                      keyboardType: null,
                       onFieldSubmitted: (_) {
                         FocusScope.of(context).requestFocus(this._email);
                       },
@@ -656,14 +679,13 @@ class _PersonalDetailState extends State<PersonalDetail> {
                           ),
                         ),
                       ),
-                      focusNode: _state,
+                      focusNode: _city,
                       value:
                           getDropdownValue(this.personalDetail.intCityId, true),
                       onTap: () {
                         FocusScope.of(context).unfocus();
                       },
                       onChanged: (value) {
-                        print(value);
                         //this.personalDetail.strCityName = value;
                       },
                       items: this
@@ -672,7 +694,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
                                 child: Text(
                                   e['strCityName'],
                                   style: TextStyle(
-                                    color: e['intStateId'] == -1
+                                    color: e['intCityId'] == -1
                                         ? Theme.of(context).dividerColor
                                         : Colors.black,
                                   ),
@@ -713,7 +735,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
                       value: getDropdownValue(
                           this.personalDetail.intStateId, true),
                       onChanged: (value) {
-                        print(value);
+                        //print(value);
                         //this.personalDetail.strStateName = value;
                       },
                       items: this

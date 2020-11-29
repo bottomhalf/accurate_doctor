@@ -48,7 +48,11 @@ class SecondCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: InkWell(
-                        onTap: null,
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                              NavigationPage.Appointment,
+                              arguments: "");
+                        },
                         child: Column(
                           children: [
                             CircleAvatar(
@@ -69,22 +73,29 @@ class SecondCard extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: Column(
-                        children: [
-                          CircleAvatar(
-                            child: Image.asset("assets/img/Group_966.png"),
-                            radius: 30,
-                            backgroundColor: Colors.transparent,
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Center(
-                            child: FittedBox(
-                              child: const Text('Walk In'),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                              NavigationPage.Appointment,
+                              arguments: "");
+                        },
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              child: Image.asset("assets/img/Group_966.png"),
+                              radius: 30,
+                              backgroundColor: Colors.transparent,
                             ),
-                          )
-                        ],
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Center(
+                              child: FittedBox(
+                                child: const Text('Walk In'),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     Expanded(

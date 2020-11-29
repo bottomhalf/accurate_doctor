@@ -62,9 +62,8 @@ class AppDrawer extends StatelessWidget {
                               children: [
                                 CircleAvatar(
                                   maxRadius: 40,
-                                  backgroundImage: NetworkImage(
-                                    'https://cdn4.vectorstock.com/i/1000x1000/07/33/tiny-cute-cartoon-patient-man-character-broken-vector-25530733.jpg',
-                                  ),
+                                  child: Configuration.getImage(
+                                      userDetail.imagePath),
                                 ),
                                 Positioned(
                                   bottom: 5,
@@ -124,7 +123,7 @@ class AppDrawer extends StatelessWidget {
                                 height: 4,
                               ),
                               Text(
-                                userDetail.customerId,
+                                userDetail.uniqueId,
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],

@@ -1,4 +1,5 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/navigation/Constants.dart';
 import 'package:flutter/material.dart';
 
 enum Gender { male, female, other }
@@ -27,7 +28,7 @@ class _GenderModalState extends State<GenderModal> {
               value: Gender.male,
               groupValue: _character,
               onChanged: (Gender value) {
-                widget.handleGender(1);
+                widget.handleGender(MappedGender.Male);
                 setState(() {
                   _character = value;
                 });
@@ -40,7 +41,7 @@ class _GenderModalState extends State<GenderModal> {
               value: Gender.female,
               groupValue: _character,
               onChanged: (Gender value) {
-                widget.handleGender(2);
+                widget.handleGender(MappedGender.Female);
                 setState(() {
                   _character = value;
                 });
@@ -53,7 +54,7 @@ class _GenderModalState extends State<GenderModal> {
               value: Gender.other,
               groupValue: _character,
               onChanged: (Gender value) {
-                widget.handleGender(0);
+                widget.handleGender(MappedGender.Other);
                 setState(() {
                   _character = value;
                 });

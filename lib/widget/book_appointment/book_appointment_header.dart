@@ -30,7 +30,7 @@ class _BookAppointmentHeaderState extends State<BookAppointmentHeader> {
           ListTile(
             leading: CircleAvatar(
               backgroundColor: Colors.transparent,
-              child: http.getImage(widget.userData['strDoctorImage']),
+              child: Configuration.getImage(widget.userData['strDoctorImage']),
               radius: 50,
             ),
             title: Text(

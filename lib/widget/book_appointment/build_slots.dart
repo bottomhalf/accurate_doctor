@@ -34,8 +34,11 @@ class _BuildSlotsState extends State<BuildSlots> {
         widget.modal.intPatientId =
             this.bindingSlots.elementAt(index)['UserId'];
 
+        widget.modal.intBranchId =
+            this.bindingSlots.elementAt(index)['intBranchId'];
+
         print(
-            'Slot: ${widget.modal.strBookTime}, Id: ${widget.modal.intPatientId}');
+            'Slot: ${widget.modal.strBookTime}, Id: ${widget.modal.intPatientId}, BranchId: ${widget.modal.intBranchId}');
       } else {
         this.bindingSlots.elementAt(index)['IsEnabled'] = false;
       }
