@@ -72,18 +72,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             child: ListView(
               //crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'Accurate Doctor',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).dividerColor,
+                Container(
+                  margin: EdgeInsets.only(bottom: 12),
+                  child: Center(
+                    child: Image.asset(
+                      "assets/img/logo.png",
+                      width: Configuration.width * .5,
+                    ),
                   ),
-                ),
-                Text(
-                  '(Logo required)',
-                  textAlign: TextAlign.center,
                 ),
                 SizedBox(
                   height: 5 * _fieldGap,

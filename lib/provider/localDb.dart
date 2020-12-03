@@ -87,7 +87,8 @@ class LocalDb {
         strMiddleName varchar(100),
         strAddress varchar(100),
         strZipCode varchar(100),
-        HealthyGx_Unique_ID varchar(100))''';
+        HealthyGx_Unique_ID varchar(100),
+        isDoctor bit)''';
 
     print('Query: $query');
     await db.execute(query).then((_) {

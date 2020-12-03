@@ -24,7 +24,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       appBar: DashboardAppBar(
         appBarHeader: 'Dashboard',
-        defaultSearchText: 'Dr ',
+        defaultSearchText: '',
       ),
       body: Container(
         decoration: BoxDecoration(

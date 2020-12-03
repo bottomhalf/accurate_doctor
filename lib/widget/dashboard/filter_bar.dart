@@ -35,7 +35,7 @@ class _FilterBatState extends State<FilterBat> {
 
   void getFilteredResult(String text) {
     if (text.length > 0) {
-      print('calling...');
+      print('SearchString: ${text}');
       http.post("AppointmentsCommon/GetSpecialityWithString_1_4",
           {"strspecialityName": text, "intCityId": 2}).then((value) {
         if (value != null) {

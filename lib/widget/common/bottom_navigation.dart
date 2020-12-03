@@ -25,7 +25,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         Navigator.of(context).pushNamed(NavigationPage.MyHealth);
         break;
       case 3:
-        Navigator.of(context).pushNamed(NavigationPage.SecondOpinion);
+        Navigator.of(context).pushNamed(NavigationPage.Manage);
         break;
     }
   }

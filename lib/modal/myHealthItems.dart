@@ -16,7 +16,7 @@ class MyHealthItems {
     ItemList('Cover Plans', "assets/img/cover.png", null),
     ItemList(
         'Subscription', "assets/img/subs.png", NavigationPage.Subscription),
-    ItemList('Health summery', "assets/img/summary.png",
+    ItemList('Health summary', "assets/img/summary.png",
         NavigationPage.HealthSummary),
     ItemList('Upload documents', "assets/img/upload.png", null),
   ];

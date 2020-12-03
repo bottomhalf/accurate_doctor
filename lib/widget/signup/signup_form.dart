@@ -102,7 +102,9 @@ class _SignUpFormState extends State<SignUpForm> {
           actions: [
             FlatButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(NavigationPage.SignIn);
+                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.of(context)
+                    .pushReplacementNamed(NavigationPage.SignIn);
               },
               child: Text(
                 'Ok',
@@ -181,9 +183,9 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   void handlerSelectedGender(int gender) {
-    if (gender == 1) {
+    if (gender == 2) {
       selectedGender.text = 'Male';
-    } else if (gender == 2) {
+    } else if (gender == 1) {
       selectedGender.text = 'Female';
     } else {
       selectedGender.text = 'Other';

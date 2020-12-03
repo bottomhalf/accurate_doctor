@@ -23,12 +23,12 @@ class _GenderModalState extends State<GenderModal> {
         children: [
           Text('Please select your gender'),
           ListTile(
-            title: const Text('Male'),
+            title: const Text("Male"),
             leading: Radio(
               value: Gender.male,
               groupValue: _character,
               onChanged: (Gender value) {
-                widget.handleGender(MappedGender.Male);
+                widget.handleGender(MappedGender.Male.index);
                 setState(() {
                   _character = value;
                 });
@@ -41,7 +41,7 @@ class _GenderModalState extends State<GenderModal> {
               value: Gender.female,
               groupValue: _character,
               onChanged: (Gender value) {
-                widget.handleGender(MappedGender.Female);
+                widget.handleGender(MappedGender.Female.index);
                 setState(() {
                   _character = value;
                 });
@@ -54,7 +54,7 @@ class _GenderModalState extends State<GenderModal> {
               value: Gender.other,
               groupValue: _character,
               onChanged: (Gender value) {
-                widget.handleGender(MappedGender.Other);
+                widget.handleGender(MappedGender.Other.index);
                 setState(() {
                   _character = value;
                 });

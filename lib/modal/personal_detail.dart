@@ -90,6 +90,13 @@ class PersonalDetailModal {
   String _ResponseFile;
   int _intStateId;
   int _intAddrId;
+  bool _isDoctor;
+
+  bool get isDoctor => _isDoctor;
+
+  set isDoctor(bool value) {
+    _isDoctor = value;
+  }
 
   int get intUserId => _intUserId;
 

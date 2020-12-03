@@ -60,6 +60,9 @@ class _DrawerItemState extends State<DrawerItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      /*decoration: BoxDecoration(
+        border: Border.all(color: Colors.black),
+      ),*/
       padding: EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

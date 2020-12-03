@@ -46,6 +46,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
   PersonalDetailModal personalDetail;
   File _filePath;
   bool isPictureAval = false;
+  String base64Data;
 
   @override
   void dispose() {
@@ -184,6 +185,17 @@ class _PersonalDetailState extends State<PersonalDetail> {
                   Fluttertoast.showToast(msg: "Unable to update address");
                 }
               });
+
+              if (this.base64Data != null) {
+                http.post("Registration/SaveImageFile", {
+                  "image": this.base64Data,
+                  "name": "user1",
+                }).then((value) {
+                  if (value == null) {
+                    Fluttertoast.showToast(msg: "Fail to upload image");
+                  }
+                });
+              }
             } else {
               Fluttertoast.showToast(msg: 'Fail to update');
             }
@@ -321,11 +333,9 @@ class _PersonalDetailState extends State<PersonalDetail> {
     try {
       ImagePicker _picker = ImagePicker();
       final pickedFile = await _picker.getImage(source: ImageSource.gallery);
-      String base64Data;
       pickedFile.readAsBytes().then((value) {
         List<int> imageBytes = value;
-        base64Data = base64Encode(imageBytes);
-        print('Image: $base64Data');
+        this.base64Data = base64Encode(imageBytes);
       });
 
       setState(() {

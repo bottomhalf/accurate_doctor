@@ -1,5 +1,7 @@
 import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
+import 'package:accurate_doctor/widget/myprofile/employer_detail.dart';
+import 'package:accurate_doctor/widget/myprofile/insurance_detail.dart';
 
 import '../widget/myprofile/manage_demographic.dart';
 import '../widget/myprofile/manage_profession.dart';
@@ -71,12 +73,13 @@ class _MyProfileState extends State<MyProfile>
               ),
             )
           : DefaultTabController(
-              length: Configuration.isDoctor ? 4 : 3,
+              length: Configuration.isDoctor ? 4 : 5,
               child: Column(
                 children: <Widget>[
                   Container(
                     constraints: BoxConstraints.expand(height: 40),
                     child: TabBar(
+                      isScrollable: true,
                       tabs: Configuration.isDoctor
                           ? [
                               Tab(text: "Personal"),
@@ -86,8 +89,10 @@ class _MyProfileState extends State<MyProfile>
                             ]
                           : [
                               Tab(text: "Personal"),
-                              Tab(text: "Lifestyle"),
                               Tab(text: "My family"),
+                              Tab(text: "Lifestyle"),
+                              Tab(text: "Insurance Detail"),
+                              Tab(text: "Employer Detail"),
                             ],
                       labelColor: Theme.of(context).accentColor,
                       labelStyle: TextStyle(
@@ -126,10 +131,16 @@ class _MyProfileState extends State<MyProfile>
                                   ),
                                 ),
                                 Container(
+                                  child: MyFamily(),
+                                ),
+                                Container(
                                   child: LifeStyle(),
                                 ),
                                 Container(
-                                  child: MyFamily(),
+                                  child: InsuranceDetail(),
+                                ),
+                                Container(
+                                  child: EmployerDetail(),
                                 ),
                               ],
                             ),

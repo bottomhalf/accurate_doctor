@@ -25,4 +25,5 @@ class NavigationPage {
   static const String CaregiverCalendar = "/caregivercalendar";
   static const String LoadingScreen = "/loadingScreen";
   static const String MyVisits = "/myvisits";
+  static const String Manage = "/manage";
 }

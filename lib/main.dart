@@ -2,6 +2,7 @@ import 'package:accurate_doctor/screens/book_appointment.dart';
 import 'package:accurate_doctor/screens/caregiver_calendar.dart';
 import 'package:accurate_doctor/screens/health_summary.dart';
 import 'package:accurate_doctor/screens/loading_screen.dart';
+import 'package:accurate_doctor/screens/manage.dart';
 import 'package:accurate_doctor/screens/my_visits.dart';
 import 'package:accurate_doctor/screens/subscription.dart';
 
@@ -97,6 +98,7 @@ class MyApp extends StatelessWidget {
         NavigationPage.CaregiverCalendar: (_) => CaregiverCalendar(),
         NavigationPage.LoadingScreen: (_) => LoadingScreen(),
         NavigationPage.MyVisits: (_) => MyVisit(),
+        NavigationPage.Manage: (_) => Manage(),
       },
       onUnknownRoute: (setting) {
         return MaterialPageRoute(builder: (ctx) => LoadingScreen());

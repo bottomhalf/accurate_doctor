@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -72,19 +74,16 @@ class AjaxCall {
     }
   }
 
-  Future<String> submit() async {
+  Future<String> submit(File imageFile, String imageUrl) async {
     String result;
     await Future.delayed(Duration(milliseconds: 20)).then((value) {
       print(value);
     });
-/*    var uri = Uri.parse('https://example.com/create');
-    var request = http.MultipartRequest('POST', uri)
-      ..fields['user'] = 'nweiz@google.com'
-      ..files.add(await http.MultipartFile.fromPath(
-          'package', 'build/package.tar.gz',
-          contentType: MediaType('application', 'x-tar')));
-    var response = await request.send();
-    if (response.statusCode == 200) print('Uploaded!');*/
-    return result;
+
+    var request = http.MultipartRequest('POST', Uri.parse(imageUrl));
+    request.files
+        .add(await http.MultipartFile.fromPath('picture', imageFile.path));
+    var res = await request.send();
+    return res.reasonPhrase;
   }
 }

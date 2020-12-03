@@ -104,7 +104,7 @@ class _SignInPageState extends State<SignInPage> {
       }).then((value) {
         userDetail = UserDetail.fromJson(json.decode(value));
 
-        userDetail.isDoctor = false;
+        userDetail.isDoctor = true;
 
         if (userDetail.statusCode != 200) {
           setState(() {
@@ -139,7 +139,8 @@ class _SignInPageState extends State<SignInPage> {
             '${personalDetail.strMiddleName}',
             '${personalDetail.strAddress}',
             '${personalDetail.strZipCode}',
-            '${userDetail.customerId}') ''';
+            '${userDetail.customerId}',
+            ${userDetail.isDoctor ? 1 : 0}) ''';
 
               personalDetail
                   .insertValue(values, userDetail.UserId)
