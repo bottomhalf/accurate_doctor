@@ -1,4 +1,3 @@
-import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:accurate_doctor/widget/signup/formheader_title.dart';

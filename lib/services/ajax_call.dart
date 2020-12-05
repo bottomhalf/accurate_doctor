@@ -74,16 +74,15 @@ class AjaxCall {
     }
   }
 
-  Future<String> submit(File imageFile, String imageUrl) async {
-    String result;
-    await Future.delayed(Duration(milliseconds: 20)).then((value) {
-      print(value);
-    });
-
-    var request = http.MultipartRequest('POST', Uri.parse(imageUrl));
-    request.files
-        .add(await http.MultipartFile.fromPath('picture', imageFile.path));
+  Future<String> submit(File imageFile, String uri) async {
+    print('Uri: $uri');
+    var request = http.MultipartRequest('POST', Uri.parse(baseUrl + uri));
+    request.fields['Id'] = '';
+    request.files.add(
+      await http.MultipartFile.fromPath('UploadedImage', imageFile.path),
+    );
     var res = await request.send();
+    print('Image status code: ${res.statusCode}');
     return res.reasonPhrase;
   }
 }

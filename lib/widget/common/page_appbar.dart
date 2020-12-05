@@ -17,7 +17,7 @@ class PageAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _PageAppBarState extends State<PageAppBar> {
-  String dropdownValue = 'INR';
+  String dropdownValue = Configuration.currency;
 
   @override
   Widget build(BuildContext context) {
@@ -64,9 +64,12 @@ class _PageAppBarState extends State<PageAppBar> {
                   fontSize: 16,
                 ),
                 onChanged: (String newValue) {
-                  setState(() {
-                    dropdownValue = newValue;
-                  });
+                  if (newValue != null && newValue != "") {
+                    Configuration.currency = newValue;
+                    setState(() {
+                      dropdownValue = newValue;
+                    });
+                  }
                 },
                 items: <String>['INR', 'USD']
                     .map<DropdownMenuItem<String>>((String value) {

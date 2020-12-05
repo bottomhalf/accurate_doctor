@@ -13,6 +13,7 @@ class Configuration {
   static double get pagePadding => _pagePadding;
   static String get defaultImgUrl => _defaultImgUrl;
   static bool isDoctor = false;
+  static String _currency = "INR";
 
   static double get height => _height;
 
@@ -21,6 +22,12 @@ class Configuration {
   }
 
   static double get width => _width;
+
+  static String get currency => _currency;
+
+  static set currency(String value) {
+    _currency = value;
+  }
 
   static bool get isAndroid => _isAndroid;
 
@@ -47,6 +54,14 @@ class Configuration {
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
         .hasMatch(email);
     return emailValid;
+  }
+
+  static String getStringValue(dynamic value) {
+    String returnValue = "";
+    if (value != null) {
+      returnValue = value.toString();
+    }
+    return returnValue;
   }
 
   static Widget getImage(String imageUrl) {

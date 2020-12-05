@@ -30,6 +30,7 @@ class _SignInPageState extends State<SignInPage> {
   double pageHeight = 0;
   AjaxCall http;
   LocalDb db;
+  bool isViewPassword = false;
 
   void togglePolicy(bool policyFlag) {
     privacyPolicyFlag = policyFlag;
@@ -277,6 +278,16 @@ class _SignInPageState extends State<SignInPage> {
                             Icons.vpn_key,
                             color: Theme.of(context).accentColor,
                           ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                this.isViewPassword = !this.isViewPassword;
+                              });
+                            },
+                            icon: Icon(FontAwesome.eye_slash),
+                            color: Theme.of(context).accentColor,
+                            iconSize: 18,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(4),
                             borderSide: const BorderSide(
@@ -286,7 +297,7 @@ class _SignInPageState extends State<SignInPage> {
                           ),
                         ),
                         controller: password,
-                        obscureText: true,
+                        obscureText: !isViewPassword,
                         textAlign: TextAlign.start,
                         focusNode: _password,
                         keyboardType: TextInputType.visiblePassword,

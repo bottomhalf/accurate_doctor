@@ -31,6 +31,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
   final _state = FocusNode();
   final _country = FocusNode();
   final _city = FocusNode();
+  final _lastName = FocusNode();
 
   bool isPrivacyPolicyFlagEnabled = false;
   TextEditingController selectedDate = TextEditingController();
@@ -50,6 +51,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
 
   @override
   void dispose() {
+    super.dispose();
     _dateOfBirth.dispose();
     _gender.dispose();
     _email.dispose();
@@ -59,7 +61,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
     _state.dispose();
     _country.dispose();
     _city.dispose();
-    super.dispose();
+    _lastName.dispose();
   }
 
   void privacyPolicyStatus(bool privacyFlag) {
@@ -186,16 +188,29 @@ class _PersonalDetailState extends State<PersonalDetail> {
                 }
               });
 
-              if (this.base64Data != null) {
-                http.post("Registration/SaveImageFile", {
-                  "image": this.base64Data,
-                  "name": "user1",
-                }).then((value) {
+              if (_filePath != null) {
+                http
+                    .submit(_filePath, "Registration/SaveImageFile")
+                    .then((value) {
                   if (value == null) {
                     Fluttertoast.showToast(msg: "Fail to upload image");
                   }
                 });
               }
+
+/*              if (this.base64Data != null) {
+                http.post("Registration/SaveImageFile", {
+                  "UploadedImage": this.base64Data,
+                  "Id": userDetail.UserId,
+                }).then((value) {
+                  print(
+                      '-----------------------------------------------------------------');
+                  print('Print Response: ${value}');
+                  if (value == null) {
+                    Fluttertoast.showToast(msg: "Fail to upload image");
+                  }
+                });
+              }*/
             } else {
               Fluttertoast.showToast(msg: 'Fail to update');
             }
@@ -332,7 +347,8 @@ class _PersonalDetailState extends State<PersonalDetail> {
   Future<void> _getPicture() async {
     try {
       ImagePicker _picker = ImagePicker();
-      final pickedFile = await _picker.getImage(source: ImageSource.gallery);
+      PickedFile pickedFile =
+          await _picker.getImage(source: ImageSource.gallery);
       pickedFile.readAsBytes().then((value) {
         List<int> imageBytes = value;
         this.base64Data = base64Encode(imageBytes);
@@ -383,7 +399,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
                     margin: EdgeInsets.only(top: _fieldGap),
                     child: TextFormField(
                       decoration: InputDecoration(
-                        labelText: 'Full name',
+                        labelText: 'First name',
                         isDense: true,
                         prefixIcon: Icon(
                           Icons.person,
@@ -401,7 +417,7 @@ class _PersonalDetailState extends State<PersonalDetail> {
                       initialValue: this.personalDetail.strFirstName,
                       keyboardType: TextInputType.text,
                       onFieldSubmitted: (_) {
-                        FocusScope.of(context).requestFocus(this._dateOfBirth);
+                        FocusScope.of(context).requestFocus(this._lastName);
                       },
                       validator: (value) {
                         if (value.isEmpty) {
@@ -412,6 +428,43 @@ class _PersonalDetailState extends State<PersonalDetail> {
                       onSaved: (value) {
                         if (value != null)
                           this.personalDetail.strFirstName = value.trim();
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: _fieldGap),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Last name',
+                        isDense: true,
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: Theme.of(context).accentColor,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      textAlign: TextAlign.start,
+                      initialValue: this.personalDetail.strLastName,
+                      keyboardType: TextInputType.text,
+                      focusNode: _lastName,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(this._dateOfBirth);
+                      },
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Full name is madatory field';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        if (value != null)
+                          this.personalDetail.strLastName = value.trim();
                       },
                     ),
                   ),

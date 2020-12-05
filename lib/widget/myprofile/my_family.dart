@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/relative_detail.dart';
+import 'package:accurate_doctor/navigation/Constants.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -51,10 +52,14 @@ class _MyFamilyState extends State<MyFamily> {
         List<dynamic> response = json.decode(value);
         if (response.length > 0) {
           relativeDetail = RelativeDetail.fromJson(response[0]);
-          print('IsUpdate: ${relativeDetail.isUpdate}');
           if (relativeDetail.strgender.isNotEmpty) {
-            selectedGender.text =
-                relativeDetail.strgender == "0" ? "Male" : "Female";
+            int genderId = 2;
+            try {
+              genderId = int.parse(relativeDetail.strgender);
+            } catch (e) {
+              genderId = 2;
+            }
+            this.handlerSelectedGender(genderId);
           }
           if (relativeDetail.strdob != null) {
             try {
@@ -174,9 +179,9 @@ class _MyFamilyState extends State<MyFamily> {
   }
 
   void handlerSelectedGender(int gender) {
-    if (gender == 1) {
+    if (gender == MappedGender.Male.index) {
       selectedGender.text = 'Male';
-    } else if (gender == 2) {
+    } else if (gender == MappedGender.Female.index) {
       selectedGender.text = 'Female';
     } else {
       selectedGender.text = 'Other';

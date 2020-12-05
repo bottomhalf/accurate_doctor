@@ -59,8 +59,8 @@ class _NetBankingCardState extends State<NetBankingCard> {
   void openCheckout() async {
     AjaxCall http = AjaxCall.getInstance;
     http.post("AppointmentsCommon/PaymentGatewayordercreate", {
-      "amount": 100, //widget.amount,
-      "currency": "INR",
+      "amount": 100 * widget.amount,
+      "currency": Configuration.currency,
       "rcptid": "Receipt" + widget.appointmentId
     }).then((orderId) {
       print(
@@ -70,7 +70,7 @@ class _NetBankingCardState extends State<NetBankingCard> {
         UserDetail userDetail = UserDetail.instance;
         var options = {
           'key': 'rzp_live_bUVQEjF4AGSaxo',
-          'amount': 100,
+          'amount': 100 * widget.amount,
           'name': userDetail.firstName,
           'order_id': this._orderId,
           'description': 'Appointment booking',

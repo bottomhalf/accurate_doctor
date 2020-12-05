@@ -42,7 +42,7 @@ class HeaderBar extends StatelessWidget {
             ),
           ),
           Text(
-            '$Username,',
+            'Location',
             style: TextStyle(color: Colors.white),
           ),
           SizedBox(

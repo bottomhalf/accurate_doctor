@@ -59,7 +59,9 @@ class BillingAndPayment extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Text(
-                    'Rs. ${getAmount(context)}',
+                    Configuration.currency == 'INR'
+                        ? 'Rs. ${getAmount(context)}'
+                        : '\$ ${getAmount(context)}',
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),

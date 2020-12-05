@@ -1,8 +1,12 @@
+import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+
 import '../../navigation/NavigationPage.dart';
 import '../../widget/drawer/drawer_item.dart';
 import 'package:flutter/material.dart';
 
 class PatientMenu extends StatelessWidget {
+  UserDetail userDetail = UserDetail.instance;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,13 +58,19 @@ class PatientMenu extends StatelessWidget {
             isReplaced: false,
           ),
           DrawerItem(
+            name: 'Reset Password',
+            icon: FontAwesome.key,
+            nav: NavigationPage.GenerateNewPassword,
+            args: userDetail.UserId,
+          ),
+          DrawerItem(
             name: 'Help Center',
             icon: Icons.help_outline,
             nav: NavigationPage.HelpCenter,
           ),
           DrawerItem(
             name: 'Logout',
-            icon: Icons.exit_to_app,
+            icon: FontAwesome.power_off,
             nav: NavigationPage.SignIn,
             isReplaced: false,
           ),

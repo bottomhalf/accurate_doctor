@@ -97,20 +97,16 @@ class _GeneratePasswordState extends State<GeneratePassword> {
             child: ListView(
               //crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'Accurate Doctor',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  child: Center(
+                    child: Image.asset(
+                      "assets/img/logo.png",
+                      width: Configuration.width * .5,
+                    ),
                   ),
                 ),
-                Text(
-                  '(Logo required)',
-                  textAlign: TextAlign.center,
-                ),
                 SizedBox(
-                  height: 5 * _fieldGap,
+                  height: 4 * _fieldGap,
                 ),
                 Text(
                   'Create New Password',
@@ -118,6 +114,7 @@ class _GeneratePasswordState extends State<GeneratePassword> {
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
                 SizedBox(
@@ -126,6 +123,7 @@ class _GeneratePasswordState extends State<GeneratePassword> {
                 Text(
                   'Please enter the OTP that has been sent to your email ID',
                   textAlign: TextAlign.center,
+                  style: TextStyle(color: Theme.of(context).accentColor),
                 ),
                 SizedBox(
                   height: 10,

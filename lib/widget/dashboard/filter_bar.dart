@@ -1,48 +1,51 @@
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+// import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'dart:convert';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 
-class FilterBat extends StatefulWidget {
+class FilterBar extends StatefulWidget {
   String defaultText;
-  FilterBat({this.defaultText});
+  Function searchCurrentItem;
+  FilterBar({this.defaultText, this.searchCurrentItem});
 
   @override
-  _FilterBatState createState() => _FilterBatState();
+  _FilterBarState createState() => _FilterBarState();
 }
 
-class _FilterBatState extends State<FilterBat> {
-  GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
+class _FilterBarState extends State<FilterBar> {
+  //GlobalKey<AutoCompleteTextFieldState<String>> key = new GlobalKey();
   List<dynamic> result = [];
   String currentText = "";
   AjaxCall http;
-  List<String> suggestions = [];
+  List<dynamic> suggestions = [];
   final _searchFilterController = TextEditingController();
+  final TextEditingController _typeAheadController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _searchFilterController.text = widget.defaultText;
     setState(() {
       suggestions = [];
     });
     http = AjaxCall.getInstance;
   }
 
-  void getFilteredResult(String text) {
+  Future<List<dynamic>> getFilteredResult(String text) async {
+    print('Searching for: $text');
+    this.suggestions = [];
     if (text.length > 0) {
-      print('SearchString: ${text}');
-      http.post("AppointmentsCommon/GetSpecialityWithString_1_4",
+      await http.post("AppointmentsCommon/GetSpecialityWithString_1_4",
           {"strspecialityName": text, "intCityId": 2}).then((value) {
         if (value != null) {
           result = json.decode(value);
           int index = 0;
           while (index < result.length) {
-            this.suggestions.add(result.elementAt(index)['strSpecialityName']);
+            this.suggestions.add(result.elementAt(index));
             index++;
           }
           setState(() {
@@ -54,6 +57,7 @@ class _FilterBatState extends State<FilterBat> {
         }
       });
     }
+    return suggestions;
   }
 
   @override
@@ -65,7 +69,7 @@ class _FilterBatState extends State<FilterBat> {
       children: [
         Expanded(
           child: Form(
-            child: SimpleAutoCompleteTextField(
+            /*child: SimpleAutoCompleteTextField(
               key: key,
               decoration: InputDecoration(
                 hintText: 'Seach by Hospital/Doctor',
@@ -82,11 +86,46 @@ class _FilterBatState extends State<FilterBat> {
                 _searchFilterController.text = text;
                 getFilteredResult(_searchFilterController.text);
               },
-              clearOnSubmit: false,
+              clearOnSubmit: true,
               textSubmitted: (text) {
                 _searchFilterController.text = text;
-                /*Navigator.of(context).pushNamed(NavigationPage.Appointment,
-                    arguments: _searchFilterController.text);*/
+                */ /*Navigator.of(context).pushNamed(NavigationPage.Appointment,
+                    arguments: _searchFilterController.text);*/ /*
+              },
+            ),*/
+
+            child: TypeAheadField(
+              textFieldConfiguration: TextFieldConfiguration(
+                controller: this._searchFilterController,
+                decoration: InputDecoration(
+                  hintText: 'Seach by Hospital/Doctor',
+                  contentPadding: EdgeInsets.only(
+                    bottom: 12,
+                  ),
+                  border: InputBorder.none,
+                ),
+              ),
+              suggestionsCallback: (pattern) async {
+                return await getFilteredResult(pattern);
+              },
+              hideOnEmpty: true,
+              itemBuilder: (context, suggestion) {
+                return Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    suggestion['strSpecialityName'],
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontSize: 16,
+                    ),
+                  ),
+                );
+              },
+              onSuggestionSelected: (value) {
+                this._searchFilterController.text = value['strSpecialityName'];
               },
             ),
 
@@ -124,8 +163,17 @@ class _FilterBatState extends State<FilterBat> {
             size: 16,
           ),
           onPressed: () {
-            Navigator.of(context).pushNamed(NavigationPage.Appointment,
-                arguments: _searchFilterController.text);
+            setState(() {
+              _searchFilterController.text = _searchFilterController.text;
+            });
+
+            if (ModalRoute.of(context).settings.name !=
+                NavigationPage.Appointment) {
+              Navigator.of(context).pushNamed(NavigationPage.Appointment,
+                  arguments: _searchFilterController.text);
+            } else {
+              widget.searchCurrentItem(this._searchFilterController.text);
+            }
           },
         )
       ],

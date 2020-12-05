@@ -35,7 +35,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
   var headerMenuItem = [];
   int itemCount;
   UserDetail userDetail;
-  String dropdownValue = 'INR';
+  String dropdownValue = Configuration.currency;
 
   @override
   void initState() {
@@ -81,8 +81,9 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: FilterBat(
+                child: FilterBar(
                   defaultText: widget.defaultSearchText,
+                  searchCurrentItem: widget.searchResult,
                 ),
               ),
               HeaderBar(this.userDetail?.firstName, 'India'),
@@ -149,9 +150,12 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                   fontSize: 18,
                 ),
                 onChanged: (String newValue) {
-                  setState(() {
-                    dropdownValue = newValue;
-                  });
+                  if (newValue != null && newValue != "") {
+                    Configuration.currency = newValue;
+                    setState(() {
+                      dropdownValue = newValue;
+                    });
+                  }
                 },
                 items: <String>['INR', 'USD']
                     .map<DropdownMenuItem<String>>((String value) {

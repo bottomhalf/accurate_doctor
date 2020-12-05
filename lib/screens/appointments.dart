@@ -2,13 +2,11 @@ import 'dart:convert';
 import '../services/ajax_call.dart';
 import '../navigation/Constants.dart';
 import '../navigation/NavigationPage.dart';
-import '../provider/appointment_details.dart';
 import 'package:flutter/widgets.dart';
 
 import '../modal/Configuration.dart';
 import '../widget/common/bottom_navigation.dart';
 import '../widget/dashboard/app_bar.dart';
-import '../widget/drawer/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 

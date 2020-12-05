@@ -1,17 +1,11 @@
-import 'dart:io';
-
 import 'package:accurate_doctor/modal/Configuration.dart';
-import 'package:accurate_doctor/modal/personal_detail.dart';
-import 'package:accurate_doctor/navigation/Constants.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
-
-import '../../widget/signup/gender_modal.dart';
-import '../../modal/user_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
+
+import 'package:intl/intl.dart';
 
 class InsuranceDetail extends StatefulWidget {
   dynamic personalDetail;
@@ -22,19 +16,107 @@ class InsuranceDetail extends StatefulWidget {
 
 class _InsuranceDetailState extends State<InsuranceDetail> {
   final _form = GlobalKey<FormState>();
+  final _licenseNo = FocusNode();
+  final _policyNo = FocusNode();
+  final _policyType = FocusNode();
+  final _policyId = FocusNode();
+  final _policyIndicator = FocusNode();
+  final _companyName = FocusNode();
+  final _memberName = FocusNode();
+  final _paymentMode = FocusNode();
+  final _playType = FocusNode();
+  final _secondPolicyId = FocusNode();
   bool isSubmiting = false;
-  bool isLoading = false;
+  bool isLoading = true;
   AjaxCall http;
+  UserDetail userDetail;
+
+  var insuranceDetail;
+  void _submitInsuranceDetail() {
+    final status = _form.currentState.validate();
+    _form.currentState.save();
+
+    if (status) {
+      insuranceDetail['IntInsCustomerId'] = userDetail.UserId.toString();
+      insuranceDetail['CreatedBy'] = userDetail.UserId.toString();
+      insuranceDetail['createdOn'] =
+          DateFormat('MM/dd/yyyy').format(DateTime.now());
+      http
+          .post("Registration/InsertInsuranceDetails", insuranceDetail)
+          .then((value) {
+        if (value != null) {
+          Fluttertoast.showToast(msg: 'Insurance added successfully');
+        }
+      });
+    } else {
+      Fluttertoast.showToast(msg: 'Please check invalid fields');
+    }
+
+    setState(() {
+      insuranceDetail = insuranceDetail;
+    });
+  }
 
   @override
   void dispose() {
     super.dispose();
+    _licenseNo.dispose();
+    _policyNo.dispose();
+    _policyType.dispose();
+    _policyId.dispose();
+    _policyIndicator.dispose();
+    _companyName.dispose();
+    _memberName.dispose();
+    _paymentMode.dispose();
+    _playType.dispose();
+    _secondPolicyId.dispose();
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    http = AjaxCall.getInstance;
+    userDetail = UserDetail.instance;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      http.post("Registration/GetInsuranceDetails",
+          {"IntInsCustomerId": userDetail.UserId}).then((value) {
+        Map<String, dynamic> insuranceData = {
+          "intInsuranceUnique_Id": "0",
+          "IntInsCustomerId": "",
+          "intLicenseNO": "",
+          "strCompanyname": "",
+          "intPolicyId": "",
+          "intPolicyNO": "",
+          "strMembername": "",
+          "intPolicyType": "",
+          "intHealthPlanType": "",
+          "intSourceofPayment": "",
+          "intSecondaryPolicyIndicator": "",
+          "intSecondaryPolicyId": "",
+          "HealthCardDetailsImgPath": "",
+          "CreatedBy": "",
+          "createdOn": "",
+          "ModifyBy": "",
+          "ModifyOn": "",
+          "IsActive": "1"
+        };
+
+        if (value != null) {
+          var data = json.decode(value);
+          if (data != null && data.length > 0) {
+            insuranceData = data[0];
+          } else {
+            Fluttertoast.showToast(msg: 'No record found');
+          }
+        }
+
+        setState(() {
+          insuranceDetail = insuranceData;
+          isLoading = false;
+        });
+      });
+    });
   }
 
   Future<void> getDatePicker() async {
@@ -87,16 +169,20 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intLicenseNO']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: _licenseNo,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(this._policyNo);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Full name is madatory field';
-                            }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intLicenseNO'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -129,16 +215,24 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intPolicyNO']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._policyNo,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(this._policyType);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Full name is madatory field';
+                            if (value == null || value == "") {
+                              return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intPolicyNO'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -171,16 +265,23 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intPolicyType']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._policyType,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(this._policyId);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Policy Type is madatory field';
+                            if (value == null || value == "") {
+                              return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intPolicyType'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -213,16 +314,24 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intPolicyId']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._policyId,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(this._policyIndicator);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Policy Id is madatory field';
+                            if (value == null || value == "") {
+                              return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intPolicyId'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -255,16 +364,25 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intSecondaryPolicyIndicator']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._policyIndicator,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(this._companyName);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value == null || value == "") {
                               return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intSecondaryPolicyIndicator'] =
+                                  value;
+                          },
                         ),
                       ],
                     ),
@@ -297,16 +415,24 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['strCompanyname']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._companyName,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(this._memberName);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value == null || value == "") {
                               return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['strCompanyname'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -339,16 +465,23 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['strMembername']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._memberName,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context).requestFocus(this._playType);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value == null || value == "") {
                               return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['strMembername'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -381,16 +514,24 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intHealthPlanType']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._playType,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(this._paymentMode);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value == null || value == "") {
                               return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intHealthPlanType'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -423,16 +564,24 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intSourceofPayment']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._paymentMode,
+                          onFieldSubmitted: (_) {
+                            FocusScope.of(context)
+                                .requestFocus(this._secondPolicyId);
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value == null || value == "") {
                               return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intSourceofPayment'] = value;
+                          },
                         ),
                       ],
                     ),
@@ -465,17 +614,56 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: Configuration.getStringValue(
+                              insuranceDetail['intSecondaryPolicyId']),
                           keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
+                          focusNode: this._secondPolicyId,
+                          onFieldSubmitted: (_) {
+                            this._submitInsuranceDetail();
+                          },
                           validator: (value) {
-                            if (value.isEmpty) {
+                            if (value == null || value == "") {
                               return 'Madatory field';
                             }
                             return null;
                           },
-                          onSaved: (value) {},
+                          onSaved: (value) {
+                            if (value != null)
+                              insuranceDetail['intSecondaryPolicyId'] = value;
+                          },
                         ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: Configuration.fieldGap * 2),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Health Card Detail',
+                          style: TextStyle(
+                            color: Theme.of(context).accentColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: ButtonTheme(
+                            minWidth: double.infinity,
+                            child: OutlineButton(
+                              highlightedBorderColor:
+                                  Theme.of(context).accentColor,
+                              child: Text('Add Document'),
+                              textColor: Theme.of(context).accentColor,
+                              onPressed: () {},
+                              color: Theme.of(context).accentColor,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -485,7 +673,9 @@ class _InsuranceDetailState extends State<InsuranceDetail> {
                       horizontal: 10,
                     ),
                     child: RaisedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _submitInsuranceDetail();
+                      },
                       color: Theme.of(context).accentColor,
                       child: isSubmiting
                           ? Center(

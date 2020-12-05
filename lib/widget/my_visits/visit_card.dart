@@ -111,14 +111,14 @@ class VisitCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                const Text('View detail'),
+                SizedBox(
+                  width: 4,
+                ),
                 GestureDetector(
                   onTap: () {},
                   child: Icon(FontAwesome.caret_down),
                 ),
-                SizedBox(
-                  width: 4,
-                ),
-                const Text('Click to expand'),
               ],
             ),
           ],
@@ -350,7 +350,7 @@ class VisitCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Priscription Detail',
+                        'Prescription Detail',
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
                         ),
