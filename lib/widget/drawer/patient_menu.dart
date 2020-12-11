@@ -49,7 +49,7 @@ class PatientMenu extends StatelessWidget {
           DrawerItem(
             name: 'Messaging',
             icon: Icons.mail,
-            nav: NavigationPage.Messaging,
+            nav: NavigationPage.Messages,
           ),
           DrawerItem(
             name: 'Billing & Payments',

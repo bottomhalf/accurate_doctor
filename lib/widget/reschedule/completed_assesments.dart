@@ -4,16 +4,14 @@ import 'package:accurate_doctor/widget/common/circular_wizard_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
-class PatientList extends StatelessWidget {
+class CompletedAssesment extends StatelessWidget {
   Function onSave;
   Function onSaveAndPrint;
   Function MoveTo;
-  List<RescheduleDataModal> rescheduleModal;
-  PatientList({
+  CompletedAssesment({
     this.onSave,
     this.onSaveAndPrint,
     this.MoveTo,
-    this.rescheduleModal,
   });
 
   int appointments = 4;
@@ -32,6 +30,33 @@ class PatientList extends StatelessWidget {
           ),
           child: Column(
             children: [
+              Container(
+                margin: EdgeInsets.only(top: Configuration.fieldGap),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    labelText: 'Test Name',
+                    isDense: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  textAlign: TextAlign.start,
+                  keyboardType: TextInputType.text,
+                  onFieldSubmitted: (_) {
+                    //FocusScope.of(context).requestFocus(_testCode);
+                  },
+                  validator: (value) {
+                    return null;
+                  },
+                  onSaved: (value) {
+                    print(value);
+                  },
+                ),
+              ),
               Row(
                 children: [
                   Flexible(
@@ -227,23 +252,19 @@ class PatientList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: Configuration.height * .58,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: appointments + 1,
-            itemBuilder: (ctx, index) {
-              if ((index + 1) == (appointments + 1))
-                return this.actionButtons(context);
-              else {
-                return this.getPatientDetail(context, index);
-              }
-            },
-          ),
-        )
-      ],
+    return Container(
+      height: Configuration.height * .58,
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: appointments + 1,
+        itemBuilder: (ctx, index) {
+          if ((index + 1) == (appointments + 1))
+            return this.actionButtons(context);
+          else {
+            return this.getPatientDetail(context, index);
+          }
+        },
+      ),
     );
   }
 }

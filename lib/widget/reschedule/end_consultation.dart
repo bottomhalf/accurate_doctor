@@ -9,7 +9,6 @@ class EndConsultation extends StatelessWidget {
   Function onSave;
   Function onSaveAndPrint;
   Function MoveTo;
-  List<RescheduleDataModal> rescheduleModal;
 
   final _testCode = FocusNode();
   final _description = FocusNode();
@@ -20,7 +19,6 @@ class EndConsultation extends StatelessWidget {
     this.onSave,
     this.onSaveAndPrint,
     this.MoveTo,
-    this.rescheduleModal,
   });
 
   void _onSave() {
@@ -41,29 +39,6 @@ class EndConsultation extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              height: Configuration.height * .15,
-              child: ListView.builder(
-                itemCount: this.rescheduleModal.length,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (ctx, index) {
-                  return CircularWizardBox(
-                    radius: 30,
-                    goToIndexedWizard: MoveTo,
-                    index: index,
-                    title: this.rescheduleModal.elementAt(index).title,
-                    righttWing:
-                        (this.rescheduleModal.length - 1) == index ? 0 : 20,
-                    leftWing: index == 0 ? 0 : 20,
-                    isCompleted:
-                        this.rescheduleModal.elementAt(index).isCompleted,
-                    isInProgress:
-                        this.rescheduleModal.elementAt(index).isInProgress,
-                  );
-                },
-              ),
-            ),
             Container(
               padding: EdgeInsets.symmetric(
                 horizontal: Configuration.pagePadding,

@@ -17,7 +17,7 @@ class HealthSummary extends StatelessWidget {
         pageTitle: 'Health Summary',
       ),
       body: DefaultTabController(
-        length: 4,
+        length: 3,
         child: Column(
           children: [
             Container(
@@ -31,9 +31,9 @@ class HealthSummary extends StatelessWidget {
                   Tab(
                     child: Text('Medications'),
                   ),
-                  Tab(
+                  /*Tab(
                     child: Text('Allergies'),
-                  ),
+                  ),*/
                   Tab(
                     child: Text('Immunizations'),
                   ),
@@ -54,7 +54,7 @@ class HealthSummary extends StatelessWidget {
                   children: [
                     HealthIssueBody(),
                     Medications(),
-                    Allergies(),
+                    //Allergies(),
                     Immunizations(),
                   ],
                 ),

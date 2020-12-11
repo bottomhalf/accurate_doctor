@@ -12,7 +12,7 @@ class Configuration {
 
   static double get pagePadding => _pagePadding;
   static String get defaultImgUrl => _defaultImgUrl;
-  static bool isDoctor = false;
+  static bool isDoctor;
   static String _currency = "INR";
 
   static double get height => _height;
@@ -60,6 +60,14 @@ class Configuration {
     String returnValue = "";
     if (value != null) {
       returnValue = value.toString();
+    }
+    return returnValue;
+  }
+
+  static String replaceToNotNull(dynamic value) {
+    String returnValue = "NA";
+    if (value != null && value != "") {
+      returnValue = value.toString().trim();
     }
     return returnValue;
   }

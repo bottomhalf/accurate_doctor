@@ -191,7 +191,7 @@ class FirstCard extends StatelessWidget {
                     InkWell(
                       onTap: () {
                         Navigator.of(context)
-                            .pushNamed(NavigationPage.CaregiverCalendar);
+                            .pushNamed(NavigationPage.MyVisits);
                       },
                       child: Container(
                         padding: EdgeInsets.only(

@@ -1,3 +1,5 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
+
 import '../navigation/Constants.dart';
 import '../widget/dashboard/app_bar.dart';
 import '../widget/dashboard/dashboard_body.dart';
@@ -17,6 +19,7 @@ class _DashboardState extends State<Dashboard> {
   void didUpdateWidget(Dashboard oldWidget) {
     FocusScope.of(context).unfocus();
     super.didUpdateWidget(oldWidget);
+    print('Is Doctor: ${Configuration.isDoctor}');
   }
 
   @override

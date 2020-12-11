@@ -1,3 +1,5 @@
+import 'package:accurate_doctor/navigation/NavigationPage.dart';
+
 import '../../widget/dashboard/filter_bar.dart';
 import 'package:flutter/widgets.dart';
 import '../../modal/user_detail.dart';
@@ -41,7 +43,6 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
   void initState() {
     super.initState();
     userDetail = UserDetail.instance;
-    Configuration.isDoctor = userDetail.isDoctor;
     var dashboardHeaderMenu = DashboardHeaderMenu();
     headerMenuItem = dashboardHeaderMenu.getMenu();
     if (headerMenuItem.length > 0)
@@ -121,7 +122,9 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
             ),
             child: IconButton(
               icon: Icon(Icons.chat_bubble_outline),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(NavigationPage.Messages);
+              },
             ),
           ),
           Badge(
@@ -132,7 +135,9 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
             ),
             child: IconButton(
               icon: Icon(Icons.notifications_none),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(NavigationPage.Notification);
+              },
             ),
           ),
           SizedBox(

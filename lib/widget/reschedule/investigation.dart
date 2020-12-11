@@ -9,7 +9,6 @@ class Investigation extends StatelessWidget {
   Function onSave;
   Function onSaveAndPrint;
   Function MoveTo;
-  List<RescheduleDataModal> rescheduleModal;
 
   final _testCode = FocusNode();
   final _description = FocusNode();
@@ -20,7 +19,6 @@ class Investigation extends StatelessWidget {
     this.onSave,
     this.onSaveAndPrint,
     this.MoveTo,
-    this.rescheduleModal,
   });
 
   void _onSave() {
@@ -42,29 +40,6 @@ class Investigation extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: Configuration.height * .15,
-              child: ListView.builder(
-                itemCount: this.rescheduleModal.length,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (ctx, index) {
-                  return CircularWizardBox(
-                    radius: 30,
-                    goToIndexedWizard: MoveTo,
-                    index: index,
-                    title: this.rescheduleModal.elementAt(index).title,
-                    righttWing:
-                        (this.rescheduleModal.length - 1) == index ? 0 : 20,
-                    leftWing: index == 0 ? 0 : 20,
-                    isCompleted:
-                        this.rescheduleModal.elementAt(index).isCompleted,
-                    isInProgress:
-                        this.rescheduleModal.elementAt(index).isInProgress,
-                  );
-                },
-              ),
-            ),
-            Container(
               padding: EdgeInsets.symmetric(
                 horizontal: Configuration.pagePadding,
               ),
@@ -80,32 +55,30 @@ class Investigation extends StatelessWidget {
                 child: Column(
                   children: [
                     Container(
-                      child: Container(
-                        margin: EdgeInsets.only(top: Configuration.fieldGap),
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Test Name',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
+                      margin: EdgeInsets.only(top: Configuration.fieldGap),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Test Name',
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: const BorderSide(
+                              color: Colors.grey,
+                              width: 1,
                             ),
                           ),
-                          textAlign: TextAlign.start,
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(_testCode);
-                          },
-                          validator: (value) {
-                            return null;
-                          },
-                          onSaved: (value) {
-                            print(value);
-                          },
                         ),
+                        textAlign: TextAlign.start,
+                        keyboardType: TextInputType.text,
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(_testCode);
+                        },
+                        validator: (value) {
+                          return null;
+                        },
+                        onSaved: (value) {
+                          print(value);
+                        },
                       ),
                     ),
                     Container(

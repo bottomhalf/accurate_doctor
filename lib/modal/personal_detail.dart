@@ -1,3 +1,4 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/user_detail.dart';
 
 import '../provider/localDb.dart';
@@ -190,7 +191,8 @@ class PersonalDetailModal {
         userDetail.address = userResult['strAddress'];
         userDetail.Pincode = userResult['strZipCode'];
         userDetail.uniqueId = userResult['HealthyGx_Unique_ID'];
-        userDetail.isDoctor = false;
+        userDetail.isDoctor = userResult['isDoctor'] == 1 ? true : false;
+        Configuration.isDoctor = userDetail.isDoctor;
         userDetail.customerId = userDetail.uniqueId;
         //print('Data: ${userDetail.toString()}');
         flag = true;
@@ -238,14 +240,16 @@ class PersonalDetailModal {
     PersonalDetailModal personalDetail = PersonalDetailModal();
     personalDetail.intUserId = data['intUserId'];
     personalDetail.intAppointmentId = data['intAppointmentId'];
-    personalDetail.strFirstName = data['strFirstName'];
-    personalDetail.strLastName = data['strLastName'];
+    personalDetail.strFirstName =
+        Configuration.replaceToNotNull(data['strFirstName']);
+    personalDetail.strLastName =
+        Configuration.getStringValue(data['strLastName']);
     personalDetail.strGender = data['strGender'];
     personalDetail.strDOB = data['strDOB'];
     personalDetail.stringDOB = data['stringDOB'];
     personalDetail.intAge = data['intAge'];
     personalDetail.strMobileNo = data['strMobileNo'];
-    personalDetail.strEmail = data['strEmail'];
+    personalDetail.strEmail = Configuration.replaceToNotNull(data['strEmail']);
     personalDetail.strMCINo = data['strMCINo'];
     personalDetail.intConsultationFee = data['intConsultationFee'];
     personalDetail.strExperience = data['strExperience'];

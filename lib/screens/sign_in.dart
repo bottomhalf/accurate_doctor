@@ -1,9 +1,6 @@
 import 'package:accurate_doctor/modal/personal_detail.dart';
 import 'package:accurate_doctor/provider/localDb.dart';
-import 'package:accurate_doctor/widget/myprofile/personal_detail.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sqflite/sqflite.dart';
-
 import '../widget/common/transparent_loader.dart';
 import '../modal/user_detail.dart';
 import '../services/ajax_call.dart';
@@ -19,6 +16,8 @@ class SignInPage extends StatefulWidget {
   _SignInPageState createState() => _SignInPageState();
 }
 
+enum SignMode { Customer, Provider }
+
 class _SignInPageState extends State<SignInPage> {
   bool isFormSubmitted = false;
   final _form = GlobalKey<FormState>();
@@ -31,6 +30,8 @@ class _SignInPageState extends State<SignInPage> {
   AjaxCall http;
   LocalDb db;
   bool isViewPassword = false;
+  SignMode _character = SignMode.Customer;
+  UserDetail userDetail = UserDetail.instance;
 
   void togglePolicy(bool policyFlag) {
     privacyPolicyFlag = policyFlag;
@@ -91,40 +92,45 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _signInUser() {
-    UserDetail userDetail = UserDetail.instance;
     FocusScope.of(context).unfocus();
     final status = _form.currentState.validate();
     _form.currentState.save();
     if (status) {
-      setState(() {
-        isFormSubmitted = !isFormSubmitted;
-      });
-      this.http.post("Customerservice/CustomerLogingIn", {
-        "email": email.text.trim(),
-        "password": password.text.trim()
-      }).then((value) {
-        userDetail = UserDetail.fromJson(json.decode(value));
+      Configuration.isDoctor = false;
+      if (_character == SignMode.Customer) {
+        setState(() {
+          isFormSubmitted = !isFormSubmitted;
+        });
+        this.http.post("Customerservice/CustomerLogingIn", {
+          "email": email.text.trim(),
+          "password": password.text.trim()
+        }).then((value) {
+          userDetail.isDoctor = false;
+          this.buildUserObject(value);
+        });
+      } else {
+        Configuration.isDoctor = true;
+        setState(() {
+          isFormSubmitted = !isFormSubmitted;
+        });
+        this.http.post("Login/LogingIn", {
+          "strUserName": email.text.trim(), // "gopijvs@gmail.com"
+          "strPassword": password.text.trim(), // "idigitalplatform@123"
+          "strOrganization": ""
+        }).then((value) {
+          userDetail.isDoctor = true;
+          this.buildPersonalDetail(value);
+        });
+      }
+    }
+  }
 
-        userDetail.isDoctor = true;
+  void buildPersonalDetail(dynamic value) {
+    PersonalDetailModal personalDetail;
+    var data = json.decode(value);
+    personalDetail = PersonalDetailModal.fromJson(data);
 
-        if (userDetail.statusCode != 200) {
-          setState(() {
-            isFormSubmitted = !isFormSubmitted;
-          });
-          this.showInvalidMesssage(
-              'Login error', 'Incorrect username or password.');
-          return;
-        } else {
-          PersonalDetailModal personalDetail;
-          print('Getting Profile detail...');
-          http
-              .get("PatientProfile/GetPatientProfileInfo/${userDetail.UserId}")
-              .then((value) {
-            if (value != null) {
-              var data = json.decode(value);
-              personalDetail = PersonalDetailModal.fromJson(data);
-
-              String values = ''' values(
+    String values = ''' values(
             ${userDetail.UserId},
             '${personalDetail.strFirstName}',
             '${personalDetail.strLastName}',
@@ -143,31 +149,46 @@ class _SignInPageState extends State<SignInPage> {
             '${userDetail.customerId}',
             ${userDetail.isDoctor ? 1 : 0}) ''';
 
-              personalDetail
-                  .insertValue(values, userDetail.UserId)
-                  .then((value) {
-                if (value) {
-                  Future.delayed(const Duration(seconds: 0), () {
-                    PersonalDetailModal.userExists().then((value) {
-                      if (value) {
-                        print('User exists');
-                        Navigator.of(context)
-                            .pushReplacementNamed(NavigationPage.Dashboard);
-                      } else {
-                        print('User not exists');
-                        setState(() {
-                          isFormSubmitted = false;
-                        });
-                      }
-                    });
-                  });
-                } else {
-                  Fluttertoast.showToast(
-                      msg: 'Server error. Please contact admin.');
-                }
+    personalDetail.insertValue(values, userDetail.UserId).then((value) {
+      if (value) {
+        Future.delayed(const Duration(seconds: 0), () {
+          PersonalDetailModal.userExists().then((value) {
+            if (value) {
+              print('User exists');
+              Navigator.of(context)
+                  .pushReplacementNamed(NavigationPage.Dashboard);
+            } else {
+              print('User not exists');
+              setState(() {
+                isFormSubmitted = false;
               });
             }
           });
+        });
+      } else {
+        Fluttertoast.showToast(msg: 'Server error. Please contact admin.');
+      }
+    });
+  }
+
+  void buildUserObject(dynamic value) {
+    userDetail = UserDetail.fromJson(json.decode(value));
+    if (userDetail.statusCode != 200) {
+      setState(() {
+        isFormSubmitted = !isFormSubmitted;
+      });
+      this.showInvalidMesssage(
+          'Login error', 'Incorrect username or password.');
+      return;
+    } else {
+      print('Getting Profile detail...');
+      http
+          .get("PatientProfile/GetPatientProfileInfo/${userDetail.UserId}")
+          .then((value) {
+        if (value != null) {
+          this.buildPersonalDetail(value);
+        } else {
+          Fluttertoast.showToast(msg: 'Server error. Please contact to admin.');
         }
       });
     }
@@ -198,7 +219,6 @@ class _SignInPageState extends State<SignInPage> {
               child: Container(
                 height: pageHeight,
                 alignment: Alignment.center,
-                width: double.infinity,
                 child: ListView(
                   //crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
@@ -339,6 +359,57 @@ class _SignInPageState extends State<SignInPage> {
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       child: Column(
                         children: [
+                          Container(
+                            width: Configuration.width,
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Row(children: [
+                                    Radio(
+                                      value: SignMode.Customer,
+                                      groupValue: _character,
+                                      onChanged: (SignMode value) {
+                                        if (value == SignMode.Customer)
+                                          Configuration.isDoctor = false;
+                                        else
+                                          Configuration.isDoctor = true;
+                                        setState(() {
+                                          _character = value;
+                                        });
+                                      },
+                                    ),
+                                    Text(
+                                      'Customer',
+                                      style: TextStyle(
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Radio(
+                                        value: SignMode.Provider,
+                                        groupValue: _character,
+                                        onChanged: (SignMode value) {
+                                          setState(() {
+                                            _character = value;
+                                          });
+                                        },
+                                      ),
+                                      Text(
+                                        'Provider',
+                                        style: TextStyle(
+                                          color: Theme.of(context).accentColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           FlatButton(
                             child: Text(
                               'Forgot password ?',

@@ -216,13 +216,13 @@ class Medications extends StatelessWidget {
                                 ),
                                 width: Configuration.width * .4,
                               ),
-                              Container(
+                              /*Container(
                                 child: OutlineButton(
                                   onPressed: () {},
                                   child: Text('Remove'),
                                 ),
                                 width: Configuration.width * .4,
-                              ),
+                              ),*/
                             ],
                           ),
                         )

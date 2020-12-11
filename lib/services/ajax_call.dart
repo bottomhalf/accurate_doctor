@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -7,7 +8,7 @@ import 'dart:convert';
 
 class AjaxCall {
   static AjaxCall ajaxCall;
-  static const String baseUrl = "http://iseniorcare1.healthygx.com/api/";
+  String _baseUrl;
 
   static get getInstance {
     if (ajaxCall == null) {
@@ -18,7 +19,11 @@ class AjaxCall {
   }
 
   get getBaseUrl {
-    return "http://iseniorcare1.healthygx.com/api/";
+    if (!Configuration.isDoctor)
+      _baseUrl = "http://iseniorcare1.healthygx.com/api/";
+    else
+      _baseUrl = "http://imobicloud1.healthygx.com/api/";
+    return _baseUrl;
   }
 
   AjaxCall._internal();
@@ -32,8 +37,8 @@ class AjaxCall {
   }
 
   Future<dynamic> post(String url, dynamic data) async {
-    print('Request: ${json.encode(data)}');
-    http.Response response = await http.post(baseUrl + url,
+    print('Url: ${this.getBaseUrl}, Request: ${json.encode(data)}');
+    http.Response response = await http.post(this.getBaseUrl + url,
         headers: this.postHeader(), body: json.encode(data));
     if (response.statusCode == 200 || response.statusCode == 201) {
       print('Response: ${response.body}');
@@ -64,7 +69,7 @@ class AjaxCall {
   }
 
   Future<String> get(String url) async {
-    http.Response response = await http.get(baseUrl + url);
+    http.Response response = await http.get(this.getBaseUrl + url);
     if (response.statusCode == 200 || response.statusCode == 201) {
       print('Response: ${response.body}');
       return response.body;
@@ -76,7 +81,8 @@ class AjaxCall {
 
   Future<String> submit(File imageFile, String uri) async {
     print('Uri: $uri');
-    var request = http.MultipartRequest('POST', Uri.parse(baseUrl + uri));
+    var request =
+        http.MultipartRequest('POST', Uri.parse(this.getBaseUrl + uri));
     request.fields['Id'] = '';
     request.files.add(
       await http.MultipartFile.fromPath('UploadedImage', imageFile.path),

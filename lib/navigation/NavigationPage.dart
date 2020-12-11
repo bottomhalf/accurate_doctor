@@ -17,7 +17,6 @@ class NavigationPage {
   static const String MyHealth = '/myHealth';
   static const String Reschedule = '/reschedule';
   static const String Notification = '/notification';
-  static const String Messaging = '/messaging';
   static const String HelpCenter = '/helpCenter';
   static const String BookAppointment = '/bookAppointment';
   static const String Subscription = '/subscription';
@@ -26,4 +25,12 @@ class NavigationPage {
   static const String LoadingScreen = "/loadingScreen";
   static const String MyVisits = "/myvisits";
   static const String Manage = "/manage";
+  static const String EHR = "/ehr";
+  static const String ManageDoctor = "/doctormanage";
+  static const String MyReport = "/myreport";
+  static const String UploadConsultation = "/uploadconsultation";
+  static const String CompletedConsultation = "/completedconsultation";
+  static const String InvoiceReport = "/invoicereport";
+  static const String AppointentReport = "/appointentreport";
+  static const String Messages = "/messages";
 }

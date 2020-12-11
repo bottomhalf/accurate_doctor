@@ -136,7 +136,7 @@ class HealthIssueBody extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
+            /*Container(
               padding: EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 10,
@@ -149,7 +149,7 @@ class HealthIssueBody extends StatelessWidget {
                 onPressed: () {},
                 child: Text('Add health issue'),
               ),
-            ),
+            ),*/
             SizedBox(
               height: 15,
             ),

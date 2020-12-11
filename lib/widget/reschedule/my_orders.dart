@@ -24,7 +24,7 @@ class _MyOrdersState extends State<MyOrders> {
   @override
   void initState() {
     var rescheduleDataModal = RescheduleDataModal('', false, false);
-    rescheduleModal = rescheduleDataModal.getBuildModal();
+    rescheduleModal = rescheduleDataModal.getBuildModal(true);
     if (rescheduleModal == null) rescheduleModal = List<RescheduleDataModal>();
   }
 
@@ -88,49 +88,42 @@ class _MyOrdersState extends State<MyOrders> {
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
       case 2:
         return Investigation(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
       case 3:
         return Medication(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
       case 4:
         return VitalsHistory(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
       case 5:
         return PastMadicalHistory(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
       case 6:
         return EndConsultation(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
       case 7:
         return FeedbackAndRating(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-          rescheduleModal: rescheduleModal,
         );
     }
   }

@@ -1,4 +1,8 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:accurate_doctor/widget/dashboard/doctor_first_card.dart';
+import 'package:accurate_doctor/widget/dashboard/doctor_second_card.dart';
+import 'package:accurate_doctor/widget/dashboard/doctor_third_card.dart';
 
 import '../../widget/dashboard/second_card.dart';
 import '../../widget/dashboard/third_card.dart';
@@ -62,13 +66,31 @@ class DashboardBody extends StatelessWidget {
               ],
             ),
           ),
-
-          //==========================================  first card ==========================
-          FirstCard(),
-          //=========================  secornd card ================================
-          SecondCard(),
-          //=========================  third card ================================
-          ThirdCard(),
+          Configuration.isDoctor
+              ? Container(
+                  child: Column(
+                    children: [
+                      //==========================================  first card ==========================
+                      DoctorFirstCard(),
+                      //=========================  secornd card ================================
+                      DoctorSecondCard(),
+                      //=========================  third card ================================
+                      DoctorThirdCard(),
+                    ],
+                  ),
+                )
+              : Container(
+                  child: Column(
+                    children: [
+                      //==========================================  first card ==========================
+                      FirstCard(),
+                      //=========================  secornd card ================================
+                      SecondCard(),
+                      //=========================  third card ================================
+                      ThirdCard(),
+                    ],
+                  ),
+                ),
         ],
       ),
     );

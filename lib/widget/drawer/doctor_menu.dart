@@ -1,4 +1,5 @@
 import 'package:accurate_doctor/modal/map.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 import '../../navigation/NavigationPage.dart';
 import '../../widget/drawer/drawer_item.dart';
@@ -26,9 +27,15 @@ class DoctorMenu extends StatelessWidget {
             isSubmenu: true,
             nav: NavigationPage.Dashboard,
             subMunes: [
-              KeyMap(key: 'Doctor Calendar', value: null),
-              KeyMap(key: 'Completed Consultations', value: null),
-              KeyMap(key: 'Upload for Complete Consultation', value: null),
+              KeyMap(
+                  key: 'Doctor Calendar',
+                  value: NavigationPage.CaregiverCalendar),
+              KeyMap(
+                  key: 'Completed Consultations',
+                  value: NavigationPage.CompletedConsultation),
+              KeyMap(
+                  key: 'Upload for Complete Consultation',
+                  value: NavigationPage.CompletedConsultation),
             ],
           ),
           DrawerItem(
@@ -43,9 +50,11 @@ class DoctorMenu extends StatelessWidget {
             nav: NavigationPage.Dashboard,
             isSubmenu: true,
             subMunes: [
-              KeyMap(key: 'Profile', value: null),
+              KeyMap(key: 'Profile', value: NavigationPage.MyProfile),
               KeyMap(key: 'Manage Schedule', value: NavigationPage.Reschedule),
-              KeyMap(key: 'Change Password', value: null),
+              KeyMap(
+                  key: 'Change Password',
+                  value: NavigationPage.GenerateNewPassword),
             ],
           ),
           DrawerItem(
@@ -54,9 +63,12 @@ class DoctorMenu extends StatelessWidget {
             nav: NavigationPage.Dashboard,
             isSubmenu: true,
             subMunes: [
-              KeyMap(key: 'Invoice Report', value: null),
-              KeyMap(key: 'Inventory Report', value: null),
-              KeyMap(key: 'Appointment Report', value: null),
+              KeyMap(
+                  key: 'Invoice Report', value: NavigationPage.InvoiceReport),
+              //KeyMap(key: 'Inventory Report', value: null),
+              KeyMap(
+                  key: 'Appointment Report',
+                  value: NavigationPage.AppointentReport),
             ],
           ),
           DrawerItem(
@@ -66,8 +78,9 @@ class DoctorMenu extends StatelessWidget {
           ),
           DrawerItem(
             name: 'Logout',
-            icon: Icons.exit_to_app,
+            icon: FontAwesome.power_off,
             nav: NavigationPage.SignIn,
+            isReplaced: false,
           ),
         ],
       ),

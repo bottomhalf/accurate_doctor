@@ -1,9 +1,23 @@
+import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
+import 'package:accurate_doctor/widget/reschedule/widget_stepper.dart';
 import '../widget/common/page_appbar.dart';
 import '../widget/reschedule/my_orders.dart';
 import '../widget/reschedule/order_history.dart';
 import 'package:flutter/material.dart';
 
-class ManageReschedule extends StatelessWidget {
+class ManageReschedule extends StatefulWidget {
+  @override
+  _ManageRescheduleState createState() => _ManageRescheduleState();
+}
+
+class _ManageRescheduleState extends State<ManageReschedule> {
+  RescheduleDataModal rescheduleDataModal;
+
+  @override
+  void initState() {
+    rescheduleDataModal = RescheduleDataModal('', false, false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,10 +52,16 @@ class ManageReschedule extends StatelessWidget {
                 child: TabBarView(
                   children: [
                     Container(
-                      child: MyOrders(),
+                      child: WidgetStepper(
+                        items: rescheduleDataModal.getBuildModal(true),
+                        isMyOrder: true,
+                      ),
                     ),
                     Container(
-                      child: OrderHistory(),
+                      child: WidgetStepper(
+                        items: rescheduleDataModal.getBuildModal(false),
+                        isMyOrder: false,
+                      ),
                     ),
                   ],
                 ),
