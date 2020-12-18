@@ -82,7 +82,7 @@ class MyHealth extends StatelessWidget {
           itemCount: items.length,
         ),
       ),
-      drawer: AppDrawer(),
+      //drawer: AppDrawer(),
       bottomNavigationBar: BottomNavigation(2),
     );
   }

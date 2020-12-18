@@ -30,17 +30,19 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void getNotificationDetail() {
-    this.http.post("Common/GetPendingAppointmentDetails", {"DocId": 1}).then(
-        (value) {
-      if (value != null) {
-        List<dynamic> notifications = json.decode(value);
-        if (notifications != null && notifications.length > 0) {
-          userDetail.notificationCount = notifications.length;
-        } else {
-          userDetail.notificationCount = 0;
+    if (userDetail.UserId != null) {
+      this.http.post("Common/GetPendingAppointmentDetails",
+          {"DocId": userDetail.UserId}).then((value) {
+        if (value != null) {
+          List<dynamic> notifications = json.decode(value);
+          if (notifications != null && notifications.length > 0) {
+            userDetail.notificationCount = notifications.length;
+          } else {
+            userDetail.notificationCount = 0;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -58,8 +60,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
           print('Checking');
           PersonalDetailModal.userExists().then((value) {
             if (value) {
-              print('User exists');
-              this.getNotificationDetail();
+              print('User exists ID: ${userDetail.UserId}');
+              if (userDetail.isDoctor) this.getNotificationDetail();
               Navigator.of(context)
                   .pushReplacementNamed(NavigationPage.Dashboard);
             } else {

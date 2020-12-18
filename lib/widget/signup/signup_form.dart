@@ -102,8 +102,7 @@ class _SignUpFormState extends State<SignUpForm> {
             FlatButton(
               onPressed: () {
                 Navigator.popUntil(context, (route) => route.isFirst);
-                Navigator.of(context)
-                    .pushReplacementNamed(NavigationPage.SignIn);
+                Navigator.of(context).pop();
               },
               child: Text(
                 'Ok',

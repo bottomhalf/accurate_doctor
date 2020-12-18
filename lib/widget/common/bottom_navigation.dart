@@ -20,12 +20,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
           Navigator.of(context).pushReplacementNamed(NavigationPage.Dashboard);
           break;
         case 1:
+          Navigator.popUntil(context, (route) => route.isFirst);
           Navigator.of(context).pushNamed(NavigationPage.EHR);
           break;
         case 2:
+          Navigator.popUntil(context, (route) => route.isFirst);
           Navigator.of(context).pushNamed(NavigationPage.MyReport);
           break;
         case 3:
+          Navigator.popUntil(context, (route) => route.isFirst);
           Navigator.of(context).pushNamed(NavigationPage.ManageDoctor);
           break;
       }
@@ -36,12 +39,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
           Navigator.of(context).pushReplacementNamed(NavigationPage.Dashboard);
           break;
         case 1:
+          Navigator.popUntil(context, (route) => route.isFirst);
           Navigator.of(context).pushNamed(NavigationPage.SecondOpinion);
           break;
         case 2:
+          Navigator.popUntil(context, (route) => route.isFirst);
           Navigator.of(context).pushNamed(NavigationPage.MyHealth);
           break;
         case 3:
+          Navigator.popUntil(context, (route) => route.isFirst);
           Navigator.of(context).pushNamed(NavigationPage.Manage);
           break;
       }

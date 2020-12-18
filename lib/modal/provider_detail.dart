@@ -206,7 +206,7 @@ class ProviderDetail {
   factory ProviderDetail.fromJson(Map<String, dynamic> providerData) {
     ProviderDetail providerDetail = ProviderDetail();
     for (var elem in providerDetailRaw.keys) {
-      providerDetail[elem] = "";
+      // providerDetail[elem] = "";
     }
     return providerDetail;
   }

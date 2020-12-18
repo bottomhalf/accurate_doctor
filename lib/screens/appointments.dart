@@ -271,7 +271,8 @@ class _AppointmentState extends State<Appointment> {
                                                 ),
                                               ),
                                               Text(
-                                                'Madhpur',
+                                                appointmentDetails.elementAt(
+                                                    index)['strLocation'],
                                                 style: TextStyle(
                                                   color: Theme.of(context)
                                                       .dividerColor,

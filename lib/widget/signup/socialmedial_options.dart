@@ -18,8 +18,7 @@ class SocialMedialOptions extends StatelessWidget {
                 minWidth: 0,
                 padding: EdgeInsets.all(0),
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushReplacementNamed(NavigationPage.SignIn);
+                  Navigator.of(context).pop();
                 },
                 child: const Text('Sign In'),
               ),

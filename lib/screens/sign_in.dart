@@ -450,8 +450,8 @@ class _SignInPageState extends State<SignInPage> {
                                 minWidth: 0,
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
-                                  Navigator.of(context).pushReplacementNamed(
-                                      NavigationPage.SignUp);
+                                  Navigator.of(context)
+                                      .pushNamed(NavigationPage.SignUp);
                                 },
                                 child: Text(
                                   'Sign Up',
