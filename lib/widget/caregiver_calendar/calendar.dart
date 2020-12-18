@@ -140,10 +140,10 @@ class CustomCalendarState extends State<CustomCalendar>
             children: [
               Container(
                 width: double.infinity,
-                height: 50,
+                height: 80,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    top: 13 * scaleFactor,
+                    top: 8 * scaleFactor,
                     bottom: 8 * scaleFactor,
                     left: 0,
                     right: 0,
@@ -293,7 +293,7 @@ class CustomCalendarState extends State<CustomCalendar>
                     width: Configuration.width,
                     padding: EdgeInsets.zero,
                     margin: EdgeInsets.zero,
-                    height: calendarWidth * 0.76,
+                    height: calendarWidth * 0.6,
                     child: PageView(
                       controller: pageController,
                       scrollDirection: Axis.horizontal,
@@ -462,7 +462,10 @@ class CustomCalendarState extends State<CustomCalendar>
           Expanded(
             child: InkWell(
               onTap: () {
-                print('working');
+                print(
+                    'Working - Day: ${rowValueList[i][j]} = ${DateTime.now().day}, '
+                    'Month: ${start.month} = ${DateTime.now().month}, '
+                    'Year: ${start.year} = ${DateTime.now().year}');
               },
               child: Container(
                 height: 22,

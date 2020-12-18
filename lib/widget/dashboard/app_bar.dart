@@ -130,7 +130,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
           Badge(
             position: BadgePosition.topEnd(top: 2, end: 4),
             badgeContent: Text(
-              '0',
+              this.userDetail.notificationCount.toString(),
               style: TextStyle(color: Colors.white),
             ),
             child: IconButton(

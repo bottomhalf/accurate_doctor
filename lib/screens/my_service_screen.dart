@@ -1,28 +1,22 @@
-import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
-import 'package:accurate_doctor/widget/reschedule/widget_stepper.dart';
-import '../widget/common/page_appbar.dart';
-import '../widget/reschedule/my_orders.dart';
-import '../widget/reschedule/order_history.dart';
+import 'package:accurate_doctor/widget/common/page_appbar.dart';
+import 'package:accurate_doctor/widget/my_service/my_order.dart';
+import 'package:accurate_doctor/widget/my_service/order_history.dart';
 import 'package:flutter/material.dart';
 
-class ManageReschedule extends StatefulWidget {
+class MyServicePage extends StatefulWidget {
   @override
-  _ManageRescheduleState createState() => _ManageRescheduleState();
+  _MyServicePageState createState() => _MyServicePageState();
 }
 
-class _ManageRescheduleState extends State<ManageReschedule> {
-  RescheduleDataModal rescheduleDataModal;
-
+class _MyServicePageState extends State<MyServicePage> {
   @override
-  void initState() {
-    rescheduleDataModal = RescheduleDataModal('', false, false);
-  }
+  void initState() {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageAppBar(
-        pageTitle: 'Reschedule',
+        pageTitle: 'My Service',
       ),
       body: DefaultTabController(
         length: 2,
@@ -52,18 +46,15 @@ class _ManageRescheduleState extends State<ManageReschedule> {
                 child: TabBarView(
                   children: [
                     Container(
-                      child: WidgetStepper(
-                        items: rescheduleDataModal.getBuildModal(true),
-                        isMyOrder: true,
-                      ),
+                      child: MyOrders(),
                     ),
                     Container(
-                      child: OrderHistory(),
+                      child: ServiceOrderHistory(),
                     ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

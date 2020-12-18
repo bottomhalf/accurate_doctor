@@ -5,7 +5,6 @@ import 'package:accurate_doctor/widget/drawer/doctor_menu.dart';
 import '../../navigation/NavigationPage.dart';
 import '../../widget/drawer/patient_menu.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 class AppDrawer extends StatelessWidget {
   UserDetail userDetail;
@@ -102,7 +101,9 @@ class AppDrawer extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Patient Name',
+                                Configuration.isDoctor
+                                    ? 'Name'
+                                    : 'Patient Name',
                                 style: TextStyle(color: Colors.white70),
                               ),
                               SizedBox(
@@ -116,14 +117,18 @@ class AppDrawer extends StatelessWidget {
                                 height: 10,
                               ),
                               Text(
-                                'Patient Id',
+                                Configuration.isDoctor
+                                    ? 'Provider Id'
+                                    : 'Patient Id',
                                 style: TextStyle(color: Colors.white70),
                               ),
                               SizedBox(
                                 height: 4,
                               ),
                               Text(
-                                userDetail.uniqueId,
+                                userDetail.uniqueId == 'null'
+                                    ? 'NA'
+                                    : userDetail.uniqueId,
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],

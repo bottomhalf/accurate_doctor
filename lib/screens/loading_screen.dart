@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/personal_detail.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
 import 'package:accurate_doctor/provider/localDb.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:accurate_doctor/widget/loading_screens/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'dart:convert';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -19,6 +21,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   AjaxCall http;
   PageController pageController = PageController(initialPage: 0);
   bool isLoading = true;
+  UserDetail userDetail;
 
   void InitConfiguration() {
     Configuration.width = MediaQuery.of(context).size.width;
@@ -26,10 +29,26 @@ class _LoadingScreenState extends State<LoadingScreen> {
     Configuration.isAndroid = Platform.isAndroid;
   }
 
+  void getNotificationDetail() {
+    this.http.post("Common/GetPendingAppointmentDetails", {"DocId": 1}).then(
+        (value) {
+      if (value != null) {
+        List<dynamic> notifications = json.decode(value);
+        if (notifications != null && notifications.length > 0) {
+          userDetail.notificationCount = notifications.length;
+        } else {
+          userDetail.notificationCount = 0;
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    userDetail = UserDetail.instance;
+    userDetail.notificationCount = 0;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       http = AjaxCall.getInstance;
       LocalDb db = LocalDb.internal();
@@ -40,6 +59,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           PersonalDetailModal.userExists().then((value) {
             if (value) {
               print('User exists');
+              this.getNotificationDetail();
               Navigator.of(context)
                   .pushReplacementNamed(NavigationPage.Dashboard);
             } else {

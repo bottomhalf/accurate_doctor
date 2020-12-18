@@ -25,10 +25,17 @@ class UserDetail {
   String _title;
   String _middleName;
   String _uniqueId;
+  int _notificationCount = 0;
+
+  int get notificationCount => _notificationCount;
+
+  set notificationCount(int value) {
+    _notificationCount = value;
+  }
 
   @override
   String toString() {
-    return 'UserDetail{_FullName: $_FullName, _userName: $_userName, _firstName: $_firstName, _lastName: $_lastName, _appointmentId: $_appointmentId, _address: $_address, _DateOfBirth: $_DateOfBirth, _Gender: $_Gender, _Email: $_Email, _MobileNo: $_MobileNo, _Password: $_Password, _customerId: $_customerId, _statusCode: $_statusCode, isDoctor: $isDoctor, _age: $_age, _pincode: $_pincode, _city: $_city, _state: $_state, _country: $_country, _userId: $_userId, _exerience: $_exerience, _imagePath: $_imagePath, _roleId: $_roleId, _title: $_title, _middleName: $_middleName, _uniqueId: $_uniqueId}';
+    return 'UserDetail{_FullName: $_FullName, _userName: $_userName, _firstName: $_firstName, _lastName: $_lastName, _appointmentId: $_appointmentId, _address: $_address, _DateOfBirth: $_DateOfBirth, _Gender: $_Gender, _Email: $_Email, _MobileNo: $_MobileNo, _Password: $_Password, _customerId: $_customerId, _statusCode: $_statusCode, isDoctor: $isDoctor, _age: $_age, _pincode: $_pincode, _city: $_city, _state: $_state, _country: $_country, _userId: $_userId, _exerience: $_exerience, _imagePath: $_imagePath, _roleId: $_roleId, _title: $_title, _middleName: $_middleName, _uniqueId: $_uniqueId, _notificationCount: $_notificationCount}';
   }
 
   String get exerience => _exerience;

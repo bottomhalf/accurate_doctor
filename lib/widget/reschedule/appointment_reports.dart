@@ -1,6 +1,7 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
 import 'package:accurate_doctor/widget/common/circular_wizard_box.dart';
+import 'package:accurate_doctor/widget/common/page_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
@@ -252,18 +253,22 @@ class AppointmentReports extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: Configuration.height * .58,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: appointments + 1,
-        itemBuilder: (ctx, index) {
-          if ((index + 1) == (appointments + 1))
-            return this.actionButtons(context);
-          else {
-            return this.getPatientDetail(context, index);
-          }
-        },
+    return Scaffold(
+      appBar: PageAppBar(
+        pageTitle: 'Appointment Report',
+      ),
+      body: Container(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: appointments + 1,
+          itemBuilder: (ctx, index) {
+            if ((index + 1) == (appointments + 1))
+              return this.actionButtons(context);
+            else {
+              return this.getPatientDetail(context, index);
+            }
+          },
+        ),
       ),
     );
   }

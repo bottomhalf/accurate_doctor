@@ -1,213 +1,46 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/widget/common/circular_wizard_box.dart';
 import 'package:accurate_doctor/widget/common/expandable_card.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:intl/intl.dart';
-
-import '../navigation/Constants.dart';
-import '../widget/common/bottom_navigation.dart';
-import '../widget/common/page_appbar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
-class CompletedConsultation extends StatelessWidget {
-  final _orderDate = TextEditingController();
-  final _scheduleDate = TextEditingController();
-
-  Future<void> _getDatePicker(BuildContext context, bool isOrderDate) async {
-    final selectedDateTime = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(Duration(days: 100 * 365)),
-      lastDate: DateTime.now(),
-    );
-
-    if (selectedDateTime != null) {
-      if (isOrderDate)
-        this._orderDate.text =
-            DateFormat('MM/dd/yyyy').format(selectedDateTime);
-      else
-        this._scheduleDate.text =
-            DateFormat('MM/dd/yyyy').format(selectedDateTime);
-    }
-  }
-
+class MyOrders extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PageAppBar(
-        pageTitle: 'Completed Consultation',
-      ),
-      body: Container(
+    return SingleChildScrollView(
+      child: Container(
         padding: EdgeInsets.all(Configuration.pagePadding),
-        child: ListView(
+        child: Column(
           children: [
             Container(
-              margin: EdgeInsets.only(top: Configuration.fieldGap),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Name',
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 1,
-                    ),
-                  ),
-                ),
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
-                onFieldSubmitted: (_) {},
-                validator: (value) {
-                  return null;
-                },
-                onSaved: (value) {},
+              alignment: Alignment.center,
+              height: Configuration.height * .15,
+              child: CircularWizardBox(
+                radius: 30,
+                goToIndexedWizard: null,
+                index: 0,
+                title: 'Today\'s Patient List',
+                righttWing: 0,
+                leftWing: 0,
+                isCompleted: true,
+                isInProgress: false,
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: Configuration.fieldGap),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Enter Mobile Number',
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 1,
-                    ),
-                  ),
-                ),
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
-                onFieldSubmitted: (_) {},
-                validator: (value) {
-                  return null;
-                },
-                onSaved: (value) {},
+              alignment: Alignment.bottomLeft,
+              margin: EdgeInsets.only(
+                top: Configuration.fieldGap * 2,
+                bottom: Configuration.fieldGap,
               ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: Configuration.fieldGap),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'UHID',
-                  isDense: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 1,
-                    ),
-                  ),
+              child: Text(
+                'Online Appointment',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.text,
-                onFieldSubmitted: (_) {},
-                validator: (value) {
-                  return null;
-                },
-                onSaved: (value) {},
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      top: Configuration.fieldGap,
-                      bottom: Configuration.fieldGap,
-                      right: 10,
-                    ),
-                    child: TextFormField(
-                      readOnly: true,
-                      onTap: () {
-                        this._getDatePicker(context, true);
-                      },
-                      controller: _orderDate,
-                      decoration: InputDecoration(
-                        labelText: 'From date',
-                        isDense: true,
-                        suffixIcon: IconButton(
-                          icon: Icon(FontAwesome.calendar),
-                          onPressed: () {},
-                          iconSize: Configuration.width * .04,
-                          color: Theme.of(context).accentColor,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      textAlign: TextAlign.start,
-                      keyboardType: TextInputType.text,
-                      onFieldSubmitted: (_) {},
-                      validator: (value) {
-                        if (value == null || value == "")
-                          return "Order date is mandatory";
-                        return null;
-                      },
-                      onSaved: (value) {},
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      top: Configuration.fieldGap,
-                      bottom: Configuration.fieldGap,
-                      right: 10,
-                    ),
-                    child: TextFormField(
-                      controller: _scheduleDate,
-                      readOnly: true,
-                      onTap: () {
-                        this._getDatePicker(context, false);
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'To date',
-                        isDense: true,
-                        suffixIcon: IconButton(
-                          icon: Icon(FontAwesome.calendar),
-                          onPressed: () {},
-                          iconSize: Configuration.width * .04,
-                          color: Theme.of(context).accentColor,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      textAlign: TextAlign.start,
-                      keyboardType: TextInputType.text,
-                      onFieldSubmitted: (_) {},
-                      validator: (value) {
-                        if (value == null || value == "")
-                          return "Schedule date is mandatory";
-                        return null;
-                      },
-                      onSaved: (value) {},
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.only(top: Configuration.fieldGap),
-              width: double.infinity,
-              child: OutlineButton(
-                onPressed: () {},
-                child: Text('Search'),
-              ),
-            ),
-            SizedBox(
-              height: Configuration.fieldGap * 2,
             ),
             Container(
               child: ExpandableCard(
@@ -402,11 +235,26 @@ class CompletedConsultation extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                top: Configuration.fieldGap * 2,
+              ),
+              width: double.infinity,
+              child: RaisedButton(
+                onPressed: () {},
+                child: Text(
+                  'Add Appointment',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                color: Theme.of(context).accentColor,
+              ),
             )
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigation(Tabs.TeleHealth.index),
     );
   }
 }

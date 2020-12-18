@@ -32,4 +32,31 @@ class RescheduleDataModal {
 
     return _rescheduleModal;
   }
+
+  List<RescheduleDataModal> getManageDoctor() {
+    _rescheduleModal = null;
+    if (_rescheduleModal == null)
+      _rescheduleModal = new List<RescheduleDataModal>();
+    _rescheduleModal.addAll({
+      RescheduleDataModal('Services', true, false),
+      RescheduleDataModal('Settings', false, false),
+      RescheduleDataModal('Work Hours', false, false),
+      RescheduleDataModal('Vacation', false, false),
+    });
+
+    return _rescheduleModal;
+  }
+
+  List<RescheduleDataModal> getBilling() {
+    _rescheduleModal = null;
+    if (_rescheduleModal == null)
+      _rescheduleModal = new List<RescheduleDataModal>();
+    _rescheduleModal.addAll({
+      RescheduleDataModal('Invoice', true, false),
+      RescheduleDataModal('Payment', false, false),
+      RescheduleDataModal('Saved Invoice', false, false),
+    });
+
+    return _rescheduleModal;
+  }
 }

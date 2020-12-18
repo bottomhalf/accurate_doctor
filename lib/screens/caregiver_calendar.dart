@@ -1,6 +1,7 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/widget/caregiver_calendar/calendar.dart';
 import 'package:accurate_doctor/widget/caregiver_calendar/calendar_filter.dart';
+import 'package:accurate_doctor/widget/caregiver_calendar/todays_routine_detail.dart';
 
 import '../widget/common/bottom_navigation.dart';
 import '../widget/common/page_appbar.dart';
@@ -17,12 +18,18 @@ class CaregiverCalendar extends StatelessWidget {
         margin: EdgeInsets.only(
           top: Configuration.pagePadding,
         ),
-        padding: EdgeInsets.all(Configuration.pagePadding),
-        child: Column(
+        child: ListView(
           children: [
-            CalendarFilter(),
-            CustomCalendar(),
+            Container(
+              padding: EdgeInsets.only(top: Configuration.pagePadding),
+              child: CalendarFilter(),
+            ),
+            Container(
+              padding: EdgeInsets.all(Configuration.pagePadding),
+              child: CustomCalendar(),
+            ),
             Divider(),
+            TodaysRoutineDetail(),
           ],
         ),
       ),

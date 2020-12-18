@@ -33,4 +33,7 @@ class NavigationPage {
   static const String InvoiceReport = "/invoicereport";
   static const String AppointentReport = "/appointentreport";
   static const String Messages = "/messages";
+  static const String MyService = "/myservice";
+  static const String BillingAngPaymentPage = "/billingangpaymentpage";
+  static const String ManageSchedule = "/manageschedule";
 }

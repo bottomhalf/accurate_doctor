@@ -1,11 +1,11 @@
 import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
+import 'package:accurate_doctor/widget/myprofile/doctor_qualification.dart';
 import 'package:accurate_doctor/widget/myprofile/employer_detail.dart';
 import 'package:accurate_doctor/widget/myprofile/insurance_detail.dart';
 
 import '../widget/myprofile/manage_demographic.dart';
 import '../widget/myprofile/manage_profession.dart';
-import '../widget/myprofile/manage_qualification.dart';
 import '../widget/myprofile/doctor_profile_manage.dart';
 import '../modal/Configuration.dart';
 import '../navigation/Constants.dart';
@@ -116,7 +116,7 @@ class _MyProfileState extends State<MyProfile>
                                   child: Demographic(),
                                 ),
                                 Container(
-                                  child: Qualification(),
+                                  child: DoctorQualification(),
                                 ),
                                 Container(
                                   child: Profession(),

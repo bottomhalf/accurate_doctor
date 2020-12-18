@@ -1,10 +1,12 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
-import 'package:accurate_doctor/widget/common/circular_wizard_box.dart';
+import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:convert';
 
-class PatientList extends StatelessWidget {
+class PatientList extends StatefulWidget {
   Function onSave;
   Function onSaveAndPrint;
   Function MoveTo;
@@ -16,7 +18,45 @@ class PatientList extends StatelessWidget {
     this.rescheduleModal,
   });
 
-  int appointments = 4;
+  @override
+  _PatientListState createState() => _PatientListState();
+}
+
+class _PatientListState extends State<PatientList> {
+  List<dynamic> orders;
+  AjaxCall http;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    http = AjaxCall.getInstance;
+    setState(() {
+      this.isLoading = true;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      this.http.post("Common/GetAppointmentDetails", {
+        "Start_Date": "2020-12-17",
+        "EndDate": "2020-12-17",
+        "DocId": 1,
+        "intBranchId": 171
+      }).then((value) {
+        if (value != null) {
+          orders = json.decode(value);
+          Fluttertoast.showToast(msg: 'Order feteched successfully');
+          setState(() {
+            this.orders = orders;
+            this.isLoading = false;
+          });
+        } else {
+          setState(() {
+            this.orders = orders;
+            this.isLoading = false;
+          });
+        }
+      });
+    });
+  }
 
   Widget getPatientDetail(BuildContext context, int index) {
     return Container(
@@ -51,7 +91,7 @@ class PatientList extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('L Sai Harsha Vardhan'),
+                    child: Text(this.orders.elementAt(index)['PatientName']),
                   ),
                 ],
               ),
@@ -74,7 +114,7 @@ class PatientList extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('23 Yrs'),
+                    child: Text('${this.orders.elementAt(index)['Age']}'),
                   ),
                 ],
               ),
@@ -95,7 +135,7 @@ class PatientList extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('Male'),
+                    child: Text(this.orders.elementAt(index)['Gender']),
                   ),
                 ],
               ),
@@ -118,7 +158,7 @@ class PatientList extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('Fever'),
+                    child: Text(this.orders.elementAt(index)['ReasonforVisit']),
                   ),
                 ],
               ),
@@ -132,7 +172,7 @@ class PatientList extends StatelessWidget {
                         bottom: 8,
                       ),
                       child: Text(
-                        'Appointment Time',
+                        'Appt. Time',
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
                           fontWeight: FontWeight.w500,
@@ -141,7 +181,7 @@ class PatientList extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('09:00'),
+                    child: Text(this.orders.elementAt(index)['BookTime']),
                   ),
                 ],
               ),
@@ -164,8 +204,16 @@ class PatientList extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text(
-                        'Consult | Prev Consultation | Reschedule | Cancel | Emr | Video Consultation'),
+                    child: Wrap(
+                      children: [
+                        Text('Consult | '),
+                        Text('Prev Consultation | '),
+                        Text('Reschedule | '),
+                        Text('Cancel | '),
+                        Text('Emr | '),
+                        Text('Video Consultation'),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -199,7 +247,7 @@ class PatientList extends StatelessWidget {
                 color: Theme.of(context).accentColor,
               ),
             ),
-            onPressed: onSaveAndPrint,
+            onPressed: widget.onSaveAndPrint,
           ),
         ),
         Container(
@@ -218,7 +266,7 @@ class PatientList extends StatelessWidget {
                 color: Theme.of(context).accentColor,
               ),
             ),
-            onPressed: onSave,
+            onPressed: widget.onSave,
           ),
         ),
       ],
@@ -227,23 +275,27 @@ class PatientList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          height: Configuration.height * .58,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: appointments + 1,
-            itemBuilder: (ctx, index) {
-              if ((index + 1) == (appointments + 1))
-                return this.actionButtons(context);
-              else {
-                return this.getPatientDetail(context, index);
-              }
-            },
-          ),
-        )
-      ],
-    );
+    return this.isLoading
+        ? Center(
+            child: CircularProgressIndicator(),
+          )
+        : Column(
+            children: [
+              Container(
+                height: Configuration.height * .58,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: this.orders.length + 1,
+                  itemBuilder: (ctx, index) {
+                    if ((index + 1) == (this.orders.length + 1))
+                      return this.actionButtons(context);
+                    else {
+                      return this.getPatientDetail(context, index);
+                    }
+                  },
+                ),
+              )
+            ],
+          );
   }
 }

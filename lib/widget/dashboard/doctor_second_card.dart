@@ -51,7 +51,7 @@ class DoctorSecondCard extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           Navigator.of(context).pushNamed(
-                              NavigationPage.Appointment,
+                              NavigationPage.Reschedule,
                               arguments: "");
                         },
                         child: Column(

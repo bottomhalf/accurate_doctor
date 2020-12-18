@@ -75,14 +75,18 @@ class Configuration {
   static Widget getImage(String imageUrl) {
     CachedNetworkImage image;
     try {
-      image = CachedNetworkImage(
-        imageUrl: imageUrl,
-        placeholder: (context, url) => CircularProgressIndicator(),
-        errorWidget: (context, url, error) => Image.network(
-            "http://imobicloud1.healthygx.com/Images/users/83588-1593068015553_3-512.png"),
-      );
-
-      return image;
+      if (imageUrl != null && imageUrl != "") {
+        image = CachedNetworkImage(
+          imageUrl: imageUrl,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Image.network(
+              "http://imobicloud1.healthygx.com/Images/users/83588-1593068015553_3-512.png"),
+        );
+        return image;
+      } else {
+        return Image.network(
+            "http://imobicloud1.healthygx.com/Images/users/83588-1593068015553_3-512.png");
+      }
     } catch (e) {
       return Image.network(
           "http://imobicloud1.healthygx.com/Images/users/83588-1593068015553_3-512.png");

@@ -1,3 +1,4 @@
+import 'package:accurate_doctor/screens/billing_payment.dart';
 import 'package:accurate_doctor/screens/book_appointment.dart';
 import 'package:accurate_doctor/screens/caregiver_calendar.dart';
 import 'package:accurate_doctor/screens/completed_consultation.dart';
@@ -7,8 +8,10 @@ import 'package:accurate_doctor/screens/invoice_report.dart';
 import 'package:accurate_doctor/screens/loading_screen.dart';
 import 'package:accurate_doctor/screens/manage.dart';
 import 'package:accurate_doctor/screens/manage_doctor.dart';
+import 'package:accurate_doctor/screens/manage_schedule.dart';
 import 'package:accurate_doctor/screens/messages.dart';
 import 'package:accurate_doctor/screens/my_reports.dart';
+import 'package:accurate_doctor/screens/my_service_screen.dart';
 import 'package:accurate_doctor/screens/my_visits.dart';
 import 'package:accurate_doctor/screens/notification.dart';
 import 'package:accurate_doctor/screens/subscription.dart';
@@ -117,6 +120,9 @@ class MyApp extends StatelessWidget {
         NavigationPage.AppointentReport: (_) => AppointmentReports(),
         NavigationPage.Notification: (_) => NotificationPage(),
         NavigationPage.Messages: (_) => Messages(),
+        NavigationPage.MyService: (_) => MyServicePage(),
+        NavigationPage.BillingAngPaymentPage: (_) => BillingAndPaymentPage(),
+        NavigationPage.ManageSchedule: (_) => ManageSchedulePage(),
       },
       onUnknownRoute: (setting) {
         return MaterialPageRoute(builder: (ctx) => LoadingScreen());

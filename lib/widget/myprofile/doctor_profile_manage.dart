@@ -1,3 +1,5 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
+
 import '../../widget/signup/gender_modal.dart';
 import '../../modal/user_detail.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +16,8 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
   final _gender = FocusNode();
   final _email = FocusNode();
   final _mobileNo = FocusNode();
-  final _password = FocusNode();
+  final _didNo = FocusNode();
+  final _extNo = FocusNode();
   bool isPrivacyPolicyFlagEnabled = false;
   TextEditingController selectedDate = TextEditingController();
   TextEditingController selectedGender = TextEditingController();
@@ -36,7 +39,8 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
     _gender.dispose();
     _email.dispose();
     _mobileNo.dispose();
-    _password.dispose();
+    _extNo.dispose();
+    _didNo.dispose();
     super.dispose();
   }
 
@@ -320,7 +324,7 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
               focusNode: _mobileNo,
               keyboardType: TextInputType.number,
               onFieldSubmitted: (_) {
-                FocusScope.of(context).requestFocus(this._password);
+                FocusScope.of(context).requestFocus(this._didNo);
               },
               validator: (value) {
                 return null;
@@ -331,15 +335,23 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
             ),
           ),
           Container(
+            padding: EdgeInsets.only(
+              top: Configuration.fieldGap * 2,
+            ),
+            child: Text(
+              'DID No.',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).accentColor,
+              ),
+            ),
+          ),
+          Container(
             margin: EdgeInsets.only(top: _fieldGap),
             child: TextFormField(
               decoration: InputDecoration(
-                labelText: 'Password',
+                labelText: 'DID No.#',
                 isDense: true,
-                prefixIcon: Icon(
-                  Icons.vpn_key,
-                  color: Theme.of(context).accentColor,
-                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
                   borderSide: const BorderSide(
@@ -349,7 +361,45 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
                 ),
               ),
               textAlign: TextAlign.start,
-              focusNode: _password,
+              focusNode: _didNo,
+              keyboardType: TextInputType.visiblePassword,
+              onFieldSubmitted: (_) {},
+              validator: (value) {
+                return null;
+              },
+              onSaved: (value) {
+                userDetail.Password = value;
+              },
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(
+              top: Configuration.fieldGap * 2,
+            ),
+            child: Text(
+              'EXT No.',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).accentColor,
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: _fieldGap),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'EXT No.#',
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+              ),
+              textAlign: TextAlign.start,
+              focusNode: _didNo,
               keyboardType: TextInputType.visiblePassword,
               onFieldSubmitted: (_) {},
               validator: (value) {
@@ -361,10 +411,7 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
             ),
           ),
           SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            height: 10,
+            height: Configuration.fieldGap * 2,
           ),
           Row(
             children: [
@@ -372,7 +419,7 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
                 color: Theme.of(context).accentColor,
                 textColor: Colors.white,
                 child: const Text(
-                  'Home',
+                  'Save',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onPressed: () {},
@@ -386,24 +433,12 @@ class _DoctorProfileManageState extends State<DoctorProfileManage> {
               ),
               OutlineButton(
                 borderSide: BorderSide(color: Colors.blueGrey),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.add,
-                      size: 16,
-                      color: Theme.of(context).accentColor,
-                    ),
-                    SizedBox(
-                      width: 2,
-                    ),
-                    Text(
-                      'New Address',
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: Theme.of(context).accentColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 onPressed: () {},
                 shape: RoundedRectangleBorder(

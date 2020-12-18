@@ -1,4 +1,5 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,14 @@ class PageAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _PageAppBarState extends State<PageAppBar> {
   String dropdownValue = Configuration.currency;
+  UserDetail userDetail;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userDetail = UserDetail.instance;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +49,7 @@ class _PageAppBarState extends State<PageAppBar> {
           Badge(
             position: BadgePosition.topEnd(top: 2, end: 4),
             badgeContent: Text(
-              '0',
+              userDetail.notificationCount.toString(),
               style: TextStyle(color: Colors.white),
             ),
             child: IconButton(

@@ -1,3 +1,4 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +99,9 @@ class _FilterBarState extends State<FilterBar> {
               textFieldConfiguration: TextFieldConfiguration(
                 controller: this._searchFilterController,
                 decoration: InputDecoration(
-                  hintText: 'Seach by Hospital/Doctor',
+                  hintText: Configuration.isDoctor
+                      ? 'Seach by Patient ID/Name'
+                      : 'Seach by Hospital/Doctor',
                   contentPadding: EdgeInsets.only(
                     bottom: 12,
                   ),

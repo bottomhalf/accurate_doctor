@@ -41,7 +41,7 @@ class DoctorMenu extends StatelessWidget {
           DrawerItem(
             name: 'Billing & Payments',
             icon: Icons.local_hospital,
-            nav: NavigationPage.MyHealth,
+            nav: NavigationPage.BillingAngPaymentPage,
             isReplaced: false,
           ),
           DrawerItem(
@@ -51,7 +51,10 @@ class DoctorMenu extends StatelessWidget {
             isSubmenu: true,
             subMunes: [
               KeyMap(key: 'Profile', value: NavigationPage.MyProfile),
-              KeyMap(key: 'Manage Schedule', value: NavigationPage.Reschedule),
+              KeyMap(
+                  key: 'Manage Schedule',
+                  value: NavigationPage
+                      .ManageSchedule), //NavigationPage.Reschedule),
               KeyMap(
                   key: 'Change Password',
                   value: NavigationPage.GenerateNewPassword),
@@ -67,14 +70,14 @@ class DoctorMenu extends StatelessWidget {
                   key: 'Invoice Report', value: NavigationPage.InvoiceReport),
               //KeyMap(key: 'Inventory Report', value: null),
               KeyMap(
-                  key: 'Appointment Report',
-                  value: NavigationPage.AppointentReport),
+                  key: 'Appointment Report', value: NavigationPage.Reschedule),
             ],
           ),
           DrawerItem(
             name: 'My Services',
             icon: Icons.mail,
-            nav: NavigationPage.Dashboard,
+            nav: NavigationPage.MyService,
+            isReplaced: false,
           ),
           DrawerItem(
             name: 'Logout',

@@ -118,6 +118,16 @@ class _SignInPageState extends State<SignInPage> {
           "strPassword": password.text.trim(), // "idigitalplatform@123"
           "strOrganization": ""
         }).then((value) {
+          this.http.post("Common/GetPendingAppointmentDetails",
+              {"DocId": userDetail.UserId}).then((value) {
+            List<dynamic> notifications = json.decode(value);
+            if (notifications != null && notifications.length > 0) {
+              //print('Notification count: ${notifications.length}');
+              userDetail.notificationCount = notifications.length;
+            } else {
+              userDetail.notificationCount = 0;
+            }
+          });
           userDetail.isDoctor = true;
           this.buildPersonalDetail(value);
         });
@@ -129,6 +139,7 @@ class _SignInPageState extends State<SignInPage> {
     PersonalDetailModal personalDetail;
     var data = json.decode(value);
     personalDetail = PersonalDetailModal.fromJson(data);
+    if (Configuration.isDoctor) userDetail.UserId = personalDetail.intUserId;
 
     String values = ''' values(
             ${userDetail.UserId},
@@ -181,13 +192,17 @@ class _SignInPageState extends State<SignInPage> {
           'Login error', 'Incorrect username or password.');
       return;
     } else {
-      print('Getting Profile detail...');
+      print('Getting Profile detail Id: ${userDetail.UserId}    ...');
       http
           .get("PatientProfile/GetPatientProfileInfo/${userDetail.UserId}")
-          .then((value) {
-        if (value != null) {
-          this.buildPersonalDetail(value);
+          .then((patientInfo) {
+        print('Patient info ${patientInfo}');
+        if (patientInfo != null) {
+          this.buildPersonalDetail(patientInfo);
         } else {
+          setState(() {
+            isFormSubmitted = false;
+          });
           Fluttertoast.showToast(msg: 'Server error. Please contact to admin.');
         }
       });

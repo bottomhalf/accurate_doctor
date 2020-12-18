@@ -1,30 +1,27 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-enum VideoConsultation { Yes, No }
-
-class Profession extends StatefulWidget {
+class DoctorQualification extends StatefulWidget {
   @override
-  _ProfessionState createState() => _ProfessionState();
+  _DoctorQualificationState createState() => _DoctorQualificationState();
 }
 
-class _ProfessionState extends State<Profession> {
+class _DoctorQualificationState extends State<DoctorQualification> {
   final _form = GlobalKey<FormState>();
-  final _membership = FocusNode();
-  final _recognition = FocusNode();
-  final _videoconsultation = FocusNode();
-  final _hospitalLocation = FocusNode();
+  final _qulification = FocusNode();
+  final _specility = FocusNode();
+  final _exprience = FocusNode();
+  final _mcino = FocusNode();
   TextEditingController selectedDate = TextEditingController();
   TextEditingController selectedGender = TextEditingController();
 
-  VideoConsultation _videoConsultationState = VideoConsultation.No;
-
   @override
   void dispose() {
-    _membership.dispose();
-    _recognition.dispose();
-    _videoconsultation.dispose();
-    _hospitalLocation.dispose();
+    _qulification.dispose();
+    _specility.dispose();
+    _exprience.dispose();
+    _mcino.dispose();
     super.dispose();
   }
 
@@ -42,7 +39,7 @@ class _ProfessionState extends State<Profession> {
                   top: Configuration.fieldGap * 2,
                 ),
                 child: Text(
-                  'Membership',
+                  'Qualification',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).accentColor,
@@ -53,7 +50,7 @@ class _ProfessionState extends State<Profession> {
                 margin: EdgeInsets.only(top: Configuration.fieldGap),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Membership',
+                    labelText: 'Qualification',
                     isDense: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -64,10 +61,10 @@ class _ProfessionState extends State<Profession> {
                     ),
                   ),
                   textAlign: TextAlign.start,
-                  focusNode: _membership,
+                  focusNode: _qulification,
                   keyboardType: TextInputType.text,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(this._recognition);
+                    FocusScope.of(context).requestFocus(this._specility);
                   },
                   validator: (value) {
                     return null;
@@ -80,7 +77,7 @@ class _ProfessionState extends State<Profession> {
                   top: Configuration.fieldGap * 2,
                 ),
                 child: Text(
-                  'Recognition',
+                  'Speciality',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).accentColor,
@@ -91,7 +88,7 @@ class _ProfessionState extends State<Profession> {
                 margin: EdgeInsets.only(top: Configuration.fieldGap),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Recognition',
+                    labelText: 'Speciality',
                     isDense: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -102,11 +99,10 @@ class _ProfessionState extends State<Profession> {
                     ),
                   ),
                   textAlign: TextAlign.start,
-                  focusNode: _recognition,
+                  focusNode: _specility,
                   keyboardType: TextInputType.text,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context)
-                        .requestFocus(this._videoconsultation);
+                    FocusScope.of(context).requestFocus(this._exprience);
                   },
                   validator: (value) {
                     return null;
@@ -119,125 +115,7 @@ class _ProfessionState extends State<Profession> {
                   top: Configuration.fieldGap * 2,
                 ),
                 child: Text(
-                  'Enable For Video Consultation',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).accentColor,
-                  ),
-                ),
-              ),
-              Container(
-                width: Configuration.width,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Row(children: [
-                        Radio(
-                          value: VideoConsultation.Yes,
-                          groupValue: _videoConsultationState,
-                          onChanged: (VideoConsultation value) {
-                            setState(() {
-                              _videoConsultationState = value;
-                            });
-                          },
-                        ),
-                        Text(
-                          'Yes',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                          ),
-                        ),
-                      ]),
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Radio(
-                            value: VideoConsultation.No,
-                            groupValue: _videoConsultationState,
-                            onChanged: (VideoConsultation value) {
-                              setState(() {
-                                _videoConsultationState = value;
-                              });
-                            },
-                          ),
-                          Text(
-                            'No',
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(
-                  top: Configuration.fieldGap * 2,
-                ),
-                child: Text(
-                  'Enable For Face To Face Consultation',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).accentColor,
-                  ),
-                ),
-              ),
-              Container(
-                width: Configuration.width,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Row(children: [
-                        Radio(
-                          value: VideoConsultation.Yes,
-                          groupValue: _videoConsultationState,
-                          onChanged: (VideoConsultation value) {
-                            setState(() {
-                              _videoConsultationState = value;
-                            });
-                          },
-                        ),
-                        Text(
-                          'Yes',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                          ),
-                        ),
-                      ]),
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Radio(
-                            value: VideoConsultation.No,
-                            groupValue: _videoConsultationState,
-                            onChanged: (VideoConsultation value) {
-                              setState(() {
-                                _videoConsultationState = value;
-                              });
-                            },
-                          ),
-                          Text(
-                            'No',
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(
-                  top: Configuration.fieldGap * 2,
-                ),
-                child: Text(
-                  'Video Consultation Fee',
+                  'Experience',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).accentColor,
@@ -248,7 +126,7 @@ class _ProfessionState extends State<Profession> {
                 margin: EdgeInsets.only(top: Configuration.fieldGap),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Video Consultation Fee',
+                    labelText: 'Experience',
                     isDense: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -259,10 +137,10 @@ class _ProfessionState extends State<Profession> {
                     ),
                   ),
                   textAlign: TextAlign.start,
-                  focusNode: _hospitalLocation,
+                  focusNode: _exprience,
                   keyboardType: TextInputType.text,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(this._hospitalLocation);
+                    FocusScope.of(context).requestFocus(this._mcino);
                   },
                   validator: (value) {
                     return null;
@@ -275,7 +153,7 @@ class _ProfessionState extends State<Profession> {
                   top: Configuration.fieldGap * 2,
                 ),
                 child: Text(
-                  'Hospital Location',
+                  'MCI No.',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).accentColor,
@@ -286,7 +164,7 @@ class _ProfessionState extends State<Profession> {
                 margin: EdgeInsets.only(top: Configuration.fieldGap),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    labelText: 'Hospital Location',
+                    labelText: 'MCI No.',
                     isDense: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -297,7 +175,7 @@ class _ProfessionState extends State<Profession> {
                     ),
                   ),
                   textAlign: TextAlign.start,
-                  focusNode: _hospitalLocation,
+                  focusNode: _mcino,
                   keyboardType: TextInputType.text,
                   onFieldSubmitted: (_) {},
                   validator: (value) {
