@@ -24,6 +24,10 @@ class FormHeaderTitle extends StatelessWidget {
           Text(
             'Please sign up to enter into app',
             textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Theme.of(context).accentColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           SizedBox(
             height: 10,

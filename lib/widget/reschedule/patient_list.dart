@@ -1,10 +1,13 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
+
+import 'package:intl/intl.dart';
 
 class PatientList extends StatefulWidget {
   Function onSave;
@@ -26,20 +29,24 @@ class _PatientListState extends State<PatientList> {
   List<dynamic> orders;
   AjaxCall http;
   bool isLoading = false;
+  UserDetail userDetail;
 
   @override
   void initState() {
     super.initState();
     http = AjaxCall.getInstance;
+    userDetail = UserDetail.instance;
+    print('UserId: ${userDetail.UserId}');
     setState(() {
       this.isLoading = true;
     });
+    print('organization id: ${userDetail.strOrganization}');
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       this.http.post("Common/GetAppointmentDetails", {
-        "Start_Date": "2020-12-17",
-        "EndDate": "2020-12-17",
-        "DocId": 1,
-        "intBranchId": 171
+        "Start_Date": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        "EndDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+        "DocId": userDetail.UserId,
+        "intBranchId": userDetail.strOrganization
       }).then((value) {
         if (value != null) {
           orders = json.decode(value);
@@ -279,23 +286,37 @@ class _PatientListState extends State<PatientList> {
         ? Center(
             child: CircularProgressIndicator(),
           )
-        : Column(
-            children: [
-              Container(
-                height: Configuration.height * .58,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: this.orders.length + 1,
-                  itemBuilder: (ctx, index) {
-                    if ((index + 1) == (this.orders.length + 1))
-                      return this.actionButtons(context);
-                    else {
-                      return this.getPatientDetail(context, index);
-                    }
-                  },
+        : this.orders.length == 0
+            ? Container(
+                margin: EdgeInsets.only(top: Configuration.pagePadding * 4),
+                child: Center(
+                  child: Text(
+                    'No active order available.',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               )
-            ],
-          );
+            : Column(
+                children: [
+                  Container(
+                    height: Configuration.height * .58,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: this.orders.length + 1,
+                      itemBuilder: (ctx, index) {
+                        if ((index + 1) == (this.orders.length + 1))
+                          return this.actionButtons(context);
+                        else {
+                          return this.getPatientDetail(context, index);
+                        }
+                      },
+                    ),
+                  )
+                ],
+              );
   }
 }

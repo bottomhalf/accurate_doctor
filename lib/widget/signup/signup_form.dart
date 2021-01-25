@@ -4,6 +4,7 @@ import 'package:accurate_doctor/widget/signup/formheader_title.dart';
 import 'package:accurate_doctor/widget/signup/gender_modal.dart';
 import 'package:accurate_doctor/widget/signup/socialmedial_options.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../modal/user_detail.dart';
@@ -94,7 +95,13 @@ class _SignUpFormState extends State<SignUpForm> {
                 ),
               ),
               Container(
-                child: Text('Registration completed successfully.'),
+                child: Text(
+                  'Registration completed successfully.',
+                  style: TextStyle(
+                    color: Theme.of(context).accentColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
@@ -388,7 +395,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   labelText: 'Email',
                   isDense: true,
                   prefixIcon: Icon(
-                    Icons.mobile_screen_share,
+                    FontAwesome.telegram,
                     color: Theme.of(context).accentColor,
                   ),
                   border: OutlineInputBorder(
@@ -426,7 +433,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   labelText: 'Mobile number',
                   isDense: true,
                   prefixIcon: Icon(
-                    Icons.mobile_screen_share,
+                    FontAwesome.mobile,
                     color: Theme.of(context).accentColor,
                   ),
                   border: OutlineInputBorder(
@@ -461,7 +468,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   labelText: 'Password',
                   isDense: true,
                   prefixIcon: Icon(
-                    Icons.vpn_key,
+                    FontAwesome.key,
                     color: Theme.of(context).accentColor,
                   ),
                   suffixIcon: InkWell(

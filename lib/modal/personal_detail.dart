@@ -92,6 +92,13 @@ class PersonalDetailModal {
   int _intStateId;
   int _intAddrId;
   bool _isDoctor;
+  String _strOrganization;
+
+  String get strOrganization => _strOrganization;
+
+  set strOrganization(String value) {
+    _strOrganization = value;
+  }
 
   bool get isDoctor => _isDoctor;
 
@@ -194,6 +201,8 @@ class PersonalDetailModal {
         userDetail.isDoctor = userResult['isDoctor'] == 1 ? true : false;
         Configuration.isDoctor = userDetail.isDoctor;
         userDetail.customerId = userDetail.uniqueId;
+        userDetail.customerId = userDetail.uniqueId;
+        //userDetail.strOrganization = userResult['strOrganization'];
         //print('Data: ${userDetail.toString()}');
         flag = true;
       }
@@ -321,6 +330,7 @@ class PersonalDetailModal {
     personalDetail.strDocumentPath = data['strDocumentPath'];
     personalDetail.strDocumentType = data['strDocumentType'];
     personalDetail.ResponseFile = data['ResponseFile'];
+    personalDetail.strOrganization = data['strOrganization'];
     splitAddress(data['strFullAddress'], personalDetail);
     return personalDetail;
   }

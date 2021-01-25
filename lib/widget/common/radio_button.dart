@@ -18,7 +18,7 @@ class _RadioButtonState extends State<RadioButton> {
 
   @override
   void initState() {
-    _value = RadioOption.off;
+    _value = RadioOption.on;
     super.initState();
   }
 
@@ -27,19 +27,16 @@ class _RadioButtonState extends State<RadioButton> {
     return Container(
       child: ListTile(
         title: Text(this.widget.title),
-        leading: InkWell(
-          onTap: () {
-            var flag = _value == RadioOption.on ? true : false;
+        leading: Radio(
+          value: RadioOption.on,
+          groupValue: _value,
+          toggleable: true,
+          onChanged: (RadioOption val) {
             setState(() {
-              _value =
-                  _value == RadioOption.on ? RadioOption.off : RadioOption.on;
+              _value = val;
             });
-            widget.privacyPolicyStatus(flag);
+            widget.privacyPolicyStatus(_value == RadioOption.on ? true : false);
           },
-          child: Radio(
-            value: RadioOption.off,
-            groupValue: _value,
-          ),
         ),
       ),
     );

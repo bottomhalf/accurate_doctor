@@ -25,6 +25,7 @@ class _FilterBarState extends State<FilterBar> {
   List<dynamic> suggestions = [];
   final _searchFilterController = TextEditingController();
   final TextEditingController _typeAheadController = TextEditingController();
+  dynamic currentProvider;
 
   @override
   void initState() {
@@ -70,31 +71,6 @@ class _FilterBarState extends State<FilterBar> {
       children: [
         Expanded(
           child: Form(
-            /*child: SimpleAutoCompleteTextField(
-              key: key,
-              decoration: InputDecoration(
-                hintText: 'Seach by Hospital/Doctor',
-                isDense: true,
-                contentPadding: EdgeInsets.only(
-                  top: 0,
-                ),
-                filled: true,
-                border: InputBorder.none,
-                fillColor: Colors.white,
-              ),
-              suggestions: suggestions,
-              textChanged: (text) {
-                _searchFilterController.text = text;
-                getFilteredResult(_searchFilterController.text);
-              },
-              clearOnSubmit: true,
-              textSubmitted: (text) {
-                _searchFilterController.text = text;
-                */ /*Navigator.of(context).pushNamed(NavigationPage.Appointment,
-                    arguments: _searchFilterController.text);*/ /*
-              },
-            ),*/
-
             child: TypeAheadField(
               textFieldConfiguration: TextFieldConfiguration(
                 controller: this._searchFilterController,
@@ -129,34 +105,10 @@ class _FilterBarState extends State<FilterBar> {
               },
               onSuggestionSelected: (value) {
                 this._searchFilterController.text = value['strSpecialityName'];
+                this.currentProvider = value;
+                print('Doctor id: ${value['intSpecialityId']}');
               },
             ),
-
-            /*TextFormField(
-                          controller: _searchFilterController,
-                          focusNode: widget.isFocused ? _searchBox : null,
-                          maxLines: 2,
-                          style: TextStyle(
-                            height: 1.2,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Seach by Hospital/Doctor',
-                            isDense: true,
-                            contentPadding: EdgeInsets.only(
-                              top: 10,
-                            ),
-                            filled: true,
-                            border: InputBorder.none,
-                            fillColor: Colors.white,
-                          ),
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {
-                            print('submitting');
-                            Navigator.of(context).pushNamed(
-                                NavigationPage.Appointment,
-                                arguments: _searchFilterController.text);
-                          },
-                        ),*/
           ),
         ),
         IconButton(
@@ -173,7 +125,7 @@ class _FilterBarState extends State<FilterBar> {
             if (ModalRoute.of(context).settings.name !=
                 NavigationPage.Appointment) {
               Navigator.of(context).pushNamed(NavigationPage.Appointment,
-                  arguments: _searchFilterController.text);
+                  arguments: this.currentProvider);
             } else {
               widget.searchCurrentItem(this._searchFilterController.text);
             }

@@ -26,6 +26,13 @@ class UserDetail {
   String _middleName;
   String _uniqueId;
   int _notificationCount = 0;
+  String _strOrganization;
+
+  String get strOrganization => _strOrganization;
+
+  set strOrganization(String value) {
+    _strOrganization = value;
+  }
 
   int get notificationCount => _notificationCount;
 

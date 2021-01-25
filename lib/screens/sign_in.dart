@@ -96,8 +96,8 @@ class _SignInPageState extends State<SignInPage> {
     final status = _form.currentState.validate();
     _form.currentState.save();
     if (status) {
-      Configuration.isDoctor = false;
       if (_character == SignMode.Customer) {
+        Configuration.isDoctor = false;
         setState(() {
           isFormSubmitted = !isFormSubmitted;
         });
@@ -105,8 +105,16 @@ class _SignInPageState extends State<SignInPage> {
           "email": email.text.trim(),
           "password": password.text.trim()
         }).then((value) {
-          userDetail.isDoctor = false;
-          this.buildUserObject(value);
+          userDetail.notificationCount = 0;
+          if (value != null) {
+            userDetail.isDoctor = false;
+            this.buildUserObject(value);
+          } else {
+            setState(() {
+              isFormSubmitted = !isFormSubmitted;
+            });
+            Fluttertoast.showToast(msg: "Fail to login. Server errorl.");
+          }
         });
       } else {
         Configuration.isDoctor = true;
@@ -118,18 +126,25 @@ class _SignInPageState extends State<SignInPage> {
           "strPassword": password.text.trim(), // "idigitalplatform@123"
           "strOrganization": ""
         }).then((value) {
-          this.http.post("Common/GetPendingAppointmentDetails",
-              {"DocId": userDetail.UserId}).then((value) {
-            List<dynamic> notifications = json.decode(value);
-            if (notifications != null && notifications.length > 0) {
-              //print('Notification count: ${notifications.length}');
-              userDetail.notificationCount = notifications.length;
-            } else {
-              userDetail.notificationCount = 0;
-            }
-          });
-          userDetail.isDoctor = true;
-          this.buildPersonalDetail(value);
+          if (value != null) {
+            this.http.post("Common/GetPendingAppointmentDetails",
+                {"DocId": userDetail.UserId}).then((jsonNotifications) {
+              List<dynamic> notifications = json.decode(jsonNotifications);
+              if (notifications != null && notifications.length > 0) {
+                //print('Notification count: ${notifications.length}');
+                userDetail.notificationCount = notifications.length;
+              } else {
+                userDetail.notificationCount = 0;
+              }
+              userDetail.isDoctor = true;
+              this.buildPersonalDetail(value);
+            });
+          } else {
+            setState(() {
+              isFormSubmitted = false;
+            });
+            Fluttertoast.showToast(msg: "Fail to login. Server errorl.");
+          }
         });
       }
     }
@@ -141,6 +156,8 @@ class _SignInPageState extends State<SignInPage> {
     personalDetail = PersonalDetailModal.fromJson(data);
     if (Configuration.isDoctor) userDetail.UserId = personalDetail.intUserId;
 
+    userDetail.strOrganization = personalDetail.strOrganization;
+    //print('Branch Id: ${userDetail.strOrganization}');
     String values = ''' values(
             ${userDetail.UserId},
             '${personalDetail.strFirstName}',
@@ -264,6 +281,10 @@ class _SignInPageState extends State<SignInPage> {
                     Text(
                       'Please sign in to enter into app',
                       textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     SizedBox(
                       height: 10,
@@ -394,7 +415,7 @@ class _SignInPageState extends State<SignInPage> {
                                       },
                                     ),
                                     Text(
-                                      'Customer',
+                                      'Patient',
                                       style: TextStyle(
                                         color: Theme.of(context).accentColor,
                                       ),

@@ -198,19 +198,18 @@ class _PersonalDetailState extends State<PersonalDetail> {
                 });
               }
 
-/*              if (this.base64Data != null) {
+              if (this.base64Data != null) {
                 http.post("Registration/SaveImageFile", {
                   "UploadedImage": this.base64Data,
                   "Id": userDetail.UserId,
                 }).then((value) {
-                  print(
-                      '-----------------------------------------------------------------');
-                  print('Print Response: ${value}');
+                  //print('-----------------------------------------------------------------');
+                  //print('Print Response: ${value}');
                   if (value == null) {
                     Fluttertoast.showToast(msg: "Fail to upload image");
                   }
                 });
-              }*/
+              }
             } else {
               Fluttertoast.showToast(msg: 'Fail to update');
             }

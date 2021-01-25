@@ -38,13 +38,18 @@ class AjaxCall {
 
   Future<dynamic> post(String url, dynamic data) async {
     print('Url: ${this.getBaseUrl}, Request: ${json.encode(data)}');
-    http.Response response = await http.post(this.getBaseUrl + url,
-        headers: this.postHeader(), body: json.encode(data));
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Response: ${response.body}');
-      return response.body;
-    } else {
-      print('Post request failed: ${response.body}');
+    try {
+      http.Response response = await http.post(this.getBaseUrl + url,
+          headers: this.postHeader(), body: json.encode(data));
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Response: ${response.body}');
+        return response.body;
+      } else {
+        print('Post request failed.');
+        return null;
+      }
+    } catch (e) {
+      print('Post request failed. $e');
       return null;
     }
   }

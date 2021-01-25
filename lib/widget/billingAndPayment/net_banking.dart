@@ -113,7 +113,7 @@ class _NetBankingCardState extends State<NetBankingCard> {
     try {
       String message =
           "ERROR: " + response.code.toString() + " - " + response.message;
-      Fluttertoast.showToast(msg: response.message);
+      Fluttertoast.showToast(msg: "Payment failed.");
     } catch (ex) {
       print('ShowToast error');
     }

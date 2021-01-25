@@ -38,6 +38,7 @@ class _NotificationPageState extends State<NotificationPage> {
     this.http.post("Common/GetPendingAppointmentDetails",
         {"DocId": userDetail.UserId}).then((value) {
       notifications = json.decode(value);
+      userDetail.notificationCount = notifications.length;
       setState(() {
         isLoading = false;
       });

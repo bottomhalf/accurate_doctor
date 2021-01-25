@@ -1,5 +1,7 @@
-import '../../navigation/NavigationPage.dart';
+import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 
 class SocialMedialOptions extends StatelessWidget {
   final double _fieldGap = 12;
@@ -13,26 +15,32 @@ class SocialMedialOptions extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Alerady have an account?'),
+              Text(
+                'Alerady have an account?',
+                style: TextStyle(color: Theme.of(context).accentColor),
+              ),
               MaterialButton(
                 minWidth: 0,
                 padding: EdgeInsets.all(0),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Sign In'),
+                child: Text(
+                  'Sign In',
+                  style: TextStyle(
+                    color: Theme.of(context).accentColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Divider(
-                thickness: 2.0,
-              ),
-              Text('Or'),
-              Divider(
-                thickness: 2.0,
+              Text(
+                'Or',
+                style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ],
           ),
@@ -40,7 +48,10 @@ class SocialMedialOptions extends StatelessWidget {
             height: _fieldGap,
           ),
           Center(
-            child: Text('Enter via social networks'),
+            child: Text(
+              'Enter via social networks',
+              style: TextStyle(color: Theme.of(context).accentColor),
+            ),
           ),
           SizedBox(
             height: _fieldGap,
@@ -52,7 +63,7 @@ class SocialMedialOptions extends StatelessWidget {
                 child: RaisedButton(
                   child: Container(
                     height: 42,
-                    child: Icon(Icons.plus_one),
+                    child: Icon(AntDesign.googleplus),
                   ),
                   color: Colors.redAccent,
                   textColor: Colors.white,
@@ -72,14 +83,14 @@ class SocialMedialOptions extends StatelessWidget {
                 child: RaisedButton(
                   child: Container(
                     height: 42,
-                    child: Icon(Icons.plus_one),
+                    child: Icon(FontAwesome.facebook_f),
                   ),
-                  color: Colors.deepPurpleAccent,
+                  color: Configuration.ColorFromHex('#3898ab'),
                   textColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                     side: BorderSide(
-                      color: Colors.deepPurpleAccent,
+                      color: Configuration.ColorFromHex('#3898ab'),
                     ),
                   ),
                   onPressed: () {},

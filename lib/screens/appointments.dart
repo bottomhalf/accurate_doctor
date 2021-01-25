@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:accurate_doctor/modal/user_detail.dart';
+
 import '../services/ajax_call.dart';
 import '../navigation/Constants.dart';
 import '../navigation/NavigationPage.dart';
@@ -19,7 +21,7 @@ class _AppointmentState extends State<Appointment> {
   List<dynamic> appointmentDetails = [];
   bool isLoadingCompleted = true;
   String searchString = '';
-  String args;
+  dynamic args;
   AjaxCall http;
 
   Future<void> showInvalidMesssage(String title, String message) {
@@ -60,7 +62,7 @@ class _AppointmentState extends State<Appointment> {
           "dayPart": "Morning",
           "strPreferredDate": null,
           "intLocationId": null,
-          "intSpecialityId": null,
+          "intSpecialityId": this.args['strType'],
           "intCityId": null,
           "strSpeciality": searchValue,
           "strlongitude": null,
@@ -70,17 +72,17 @@ class _AppointmentState extends State<Appointment> {
           "intMinCost": 0,
           "intMaxCost": 99999,
           "intMinExp": null,
-          "intMaxExp": 30,
+          "intMaxExp": 60,
           "FromTime": null,
           "ToTime": null,
           "pageno": 1,
           "fldSponsorCookie": null,
           "fldEmpanelledCookie": null,
           "fldElseCookie": null,
-          "intUserId": 0,
+          "intUserId": args['intSpecialityId'],
           "intSymptomId": 0,
           "intLanguageId": 0,
-          "strGender": "M"
+          "strGender": ""
         },
       );
 
@@ -119,13 +121,14 @@ class _AppointmentState extends State<Appointment> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      args = ModalRoute.of(context).settings?.arguments as String;
-      print('Filter data: $args');
-      if (args.isNotEmpty) {
+      dynamic value = ModalRoute.of(context).settings?.arguments as dynamic;
+      if (value.isNotEmpty) {
+        print('Filter data: ${jsonEncode(value)}');
         setState(() {
           isLoadingCompleted = true;
+          args = value;
         });
-        this.loadData(args);
+        this.loadData(value['strSpecialityName']);
       } else {
         setState(() {
           searchString = '';
