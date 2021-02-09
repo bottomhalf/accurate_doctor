@@ -21,15 +21,8 @@ class CaregiverCalendar extends StatelessWidget {
         child: ListView(
           children: [
             Container(
-              padding: EdgeInsets.only(top: Configuration.pagePadding),
-              child: CalendarFilter(),
-            ),
-            Container(
-              padding: EdgeInsets.all(Configuration.pagePadding),
               child: CustomCalendar(),
             ),
-            Divider(),
-            TodaysRoutineDetail(),
           ],
         ),
       ),

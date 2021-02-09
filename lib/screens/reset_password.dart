@@ -1,4 +1,5 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _GeneratePasswordState extends State<GeneratePassword> {
   double pageHeight = Configuration.height - 10;
   void _sendOTP() {}
   int userId = 0;
+  UserDetail userDetail;
   bool isSubmitted = false;
 
   @override
@@ -40,15 +42,27 @@ class _GeneratePasswordState extends State<GeneratePassword> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      userId = ModalRoute.of(context).settings?.arguments as int;
-      print('userid: $userId');
-      setState(() {
-        userId = userId;
-      });
+      userDetail = UserDetail.instance;
+      if (Configuration.isDoctor) {
+        print('UserId ${userDetail.UserId}');
+      } else {
+        userId = ModalRoute.of(context).settings?.arguments as int;
+        print('userid: $userId');
+        setState(() {
+          userId = userId;
+        });
+      }
     });
   }
 
   void submitChangePassword() {
+    if (Configuration.isDoctor)
+      this.changeProviderPassword();
+    else
+      this.changeCustomerPassword();
+  }
+
+  Future<void> changeProviderPassword() async {
     final state = _form.currentState.validate();
     _form.currentState.save();
 
@@ -58,7 +72,39 @@ class _GeneratePasswordState extends State<GeneratePassword> {
         isSubmitted = true;
       });
       AjaxCall http = AjaxCall.getInstance;
-      http.post("PatientProfile/ChangePassword", {
+      await http.post("Login/ChangePassword", {
+        "intUserId": userDetail.UserId,
+        "strEmail": userDetail.Email,
+        "strNewPassword": _confirmpasswordController.text.trim(),
+        "strPassword": _oldPassword.text.trim(),
+        "strUserName": ''
+      }).then((value) {
+        var result = json.decode(value);
+        if (result['Status'] == "Success") {
+          Fluttertoast.showToast(msg: 'Password changed successfully');
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.of(context).pushReplacementNamed(NavigationPage.SignIn);
+        } else {
+          Fluttertoast.showToast(msg: result['Status']);
+          setState(() {
+            isSubmitted = false;
+          });
+        }
+      });
+    }
+  }
+
+  Future<void> changeCustomerPassword() async {
+    final state = _form.currentState.validate();
+    _form.currentState.save();
+
+    if (state) {
+      FocusScope.of(context).unfocus();
+      setState(() {
+        isSubmitted = true;
+      });
+      AjaxCall http = AjaxCall.getInstance;
+      await http.post("PatientProfile/ChangePassword", {
         "intUserId": userId,
         "strPassword": _oldPassword.text,
         "strNewPassword": _confirmpasswordController.text

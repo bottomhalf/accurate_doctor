@@ -45,7 +45,7 @@ class AjaxCall {
         print('Response: ${response.body}');
         return response.body;
       } else {
-        print('Post request failed.');
+        print('Post request failed. Status code: ${response.statusCode}');
         return null;
       }
     } catch (e) {
@@ -84,14 +84,15 @@ class AjaxCall {
     }
   }
 
-  Future<String> submit(File imageFile, String uri) async {
-    print('Uri: $uri');
-    var request =
-        http.MultipartRequest('POST', Uri.parse(this.getBaseUrl + uri));
-    request.fields['Id'] = '';
-    request.files.add(
-      await http.MultipartFile.fromPath('UploadedImage', imageFile.path),
-    );
+  Future<String> submit(File imageFile, String args, String uri) async {
+    print('Uri: $uri and Args: $args');
+    //var fullUrl = Uri.parse("http://ec2-52-66-251-20.ap-south-1.compute.amazonaws.com/marsauth/api/Webportal/SaveImage");
+    var fullUrl = Uri.parse(this._baseUrl + uri);
+    var request = http.MultipartRequest('POST', fullUrl)
+      ..fields['Id'] = args
+      ..files.add(
+          await http.MultipartFile.fromPath('UploadedImage', imageFile.path));
+
     var res = await request.send();
     print('Image status code: ${res.statusCode}');
     return res.reasonPhrase;

@@ -127,7 +127,8 @@ class _FilterBarState extends State<FilterBar> {
               Navigator.of(context).pushNamed(NavigationPage.Appointment,
                   arguments: this.currentProvider);
             } else {
-              widget.searchCurrentItem(this._searchFilterController.text);
+              widget.searchCurrentItem(
+                  this._searchFilterController.text, this.currentProvider);
             }
           },
         )

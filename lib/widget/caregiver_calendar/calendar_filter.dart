@@ -2,6 +2,8 @@ import 'package:accurate_doctor/navigation/Constants.dart';
 import 'package:flutter/material.dart';
 
 class CalendarFilter extends StatefulWidget {
+  Function filterType;
+  CalendarFilter({this.filterType});
   @override
   _CalendarFilterState createState() => _CalendarFilterState();
 }
@@ -56,6 +58,7 @@ class _CalendarFilterState extends State<CalendarFilter> {
         children: [
           InkWell(
             onTap: () {
+              widget.filterType(true, false, false);
               this.getCalenderDetail(CalendarType.Today);
             },
             child: Container(
@@ -83,6 +86,7 @@ class _CalendarFilterState extends State<CalendarFilter> {
           ),
           InkWell(
             onTap: () {
+              widget.filterType(false, true, false);
               this.getCalenderDetail(CalendarType.Week);
             },
             child: Container(
@@ -90,7 +94,7 @@ class _CalendarFilterState extends State<CalendarFilter> {
               decoration: BoxDecoration(
                 color: this.week ? Theme.of(context).accentColor : Colors.white,
                 border: Border.symmetric(
-                  vertical: BorderSide(color: Colors.black),
+                  horizontal: BorderSide(color: Colors.black),
                 ),
               ),
               child: Text(
@@ -105,6 +109,7 @@ class _CalendarFilterState extends State<CalendarFilter> {
           ),
           InkWell(
             onTap: () {
+              widget.filterType(false, false, true);
               this.getCalenderDetail(CalendarType.Month);
             },
             child: Container(

@@ -1,27 +1,133 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
-import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
-import 'package:accurate_doctor/widget/common/circular_wizard_box.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:convert';
 
-class CompletedAssesment extends StatelessWidget {
+import 'package:intl/intl.dart';
+
+class CompletedAssesment extends StatefulWidget {
   Function onSave;
   Function onSaveAndPrint;
   Function MoveTo;
-  CompletedAssesment({
-    this.onSave,
-    this.onSaveAndPrint,
-    this.MoveTo,
-  });
+  CompletedAssesment({this.onSave, this.onSaveAndPrint, this.MoveTo});
 
+  @override
+  _CompletedAssesmentState createState() => _CompletedAssesmentState();
+}
+
+class _CompletedAssesmentState extends State<CompletedAssesment> {
   int appointments = 4;
+  AjaxCall http;
+  UserDetail userDetail;
+  bool isAppointmentLoaded = false;
+  List<dynamic> appointmentResult = [];
 
-  Widget getPatientDetail(BuildContext context, int index) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 12,
-      ),
-      child: Card(
+  final _form = GlobalKey<FormState>();
+  final _fromDate = FocusNode();
+  final _toDate = FocusNode();
+  final _name = FocusNode();
+  final _mobileNumber = FocusNode();
+  final _uhid = FocusNode();
+  DateTime fromDate;
+  DateTime toDate;
+
+  TextEditingController selectedFromDate = TextEditingController();
+  TextEditingController selectedToDate = TextEditingController();
+  TextEditingController patientName = TextEditingController();
+  TextEditingController mobileNum = TextEditingController();
+  TextEditingController uhid = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    http = AjaxCall.getInstance;
+    userDetail = UserDetail.instance;
+    _fromDate.addListener(() {
+      FocusScope.of(context).unfocus();
+      if (_fromDate.hasFocus) {
+        Configuration.getDatePicker(context).then((date) {
+          if (date != null) {
+            this.fromDate = date;
+            selectedFromDate.text = DateFormat.yMd().format(date);
+          }
+        });
+      }
+    });
+
+    _toDate.addListener(() {
+      FocusScope.of(context).unfocus();
+      if (_toDate.hasFocus) {
+        Configuration.getDatePicker(context).then((date) {
+          if (date != null) {
+            this.toDate = date;
+            selectedToDate.text = DateFormat.yMd().format(date);
+          }
+        });
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      patientName.text = "";
+      mobileNum.text = "";
+      uhid.text = "";
+      //_loadData();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fromDate.dispose();
+    _toDate.dispose();
+    _name.dispose();
+    _mobileNumber.dispose();
+    _uhid.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadData() async {
+    print('Fromdate: $fromDate & Todate: $toDate');
+    await http.post("Common/GetCompleteConsultationsList", {
+      "strFromDate":
+          DateFormat("yyyy-MM-dd").format(this.fromDate), //"2020-01-07",
+      "strToDate": DateFormat("yyyy-MM-dd").format(this.toDate),
+      "intBranchId": userDetail.strOrganization,
+      "intUserId": userDetail.UserId,
+      "strPatientName": patientName.text,
+      "strMRNNo": "",
+      "strMobileNo": mobileNum.text
+    }).then((result) {
+      if (result != null) {
+        List<dynamic> resultSet = json.decode(result);
+        if (resultSet.length > 0) {
+          List<dynamic> subResultSet = [];
+          int i = 0;
+          while (i < resultSet.length) {
+            subResultSet.add(resultSet[i]);
+            i++;
+            if (i == 10) break;
+          }
+          setState(() {
+            appointmentResult = subResultSet;
+            isAppointmentLoaded = true;
+          });
+        }
+        Fluttertoast.showToast(msg: "Order History loaded successfully.");
+      } else {
+        Fluttertoast.showToast(msg: "Fail to laod Order History.");
+        setState(() {
+          isAppointmentLoaded = true;
+        });
+      }
+    });
+  }
+
+  List<Widget> _getAppointmentCard(BuildContext context) {
+    List<Widget> cards = List<Widget>();
+    int i = 0;
+    while (i < appointmentResult.length) {
+      cards.add(Card(
         elevation: 2,
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -30,33 +136,6 @@ class CompletedAssesment extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Container(
-                margin: EdgeInsets.only(top: Configuration.fieldGap),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Test Name',
-                    isDense: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                  textAlign: TextAlign.start,
-                  keyboardType: TextInputType.text,
-                  onFieldSubmitted: (_) {
-                    //FocusScope.of(context).requestFocus(_testCode);
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                  onSaved: (value) {
-                    print(value);
-                  },
-                ),
-              ),
               Row(
                 children: [
                   Flexible(
@@ -76,7 +155,7 @@ class CompletedAssesment extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('L Sai Harsha Vardhan'),
+                    child: Text(appointmentResult[i]['strPatientName']),
                   ),
                 ],
               ),
@@ -99,7 +178,7 @@ class CompletedAssesment extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('23 Yrs'),
+                    child: Text(appointmentResult[i]['strAge']),
                   ),
                 ],
               ),
@@ -120,7 +199,7 @@ class CompletedAssesment extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('Male'),
+                    child: Text(appointmentResult[i]['strGender']),
                   ),
                 ],
               ),
@@ -134,7 +213,7 @@ class CompletedAssesment extends StatelessWidget {
                         bottom: 8,
                       ),
                       child: Text(
-                        'Reason For Visit',
+                        'Consult Date',
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
                           fontWeight: FontWeight.w500,
@@ -143,7 +222,7 @@ class CompletedAssesment extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('Fever'),
+                    child: Text(appointmentResult[i]['ConsultationDate']),
                   ),
                 ],
               ),
@@ -157,7 +236,7 @@ class CompletedAssesment extends StatelessWidget {
                         bottom: 8,
                       ),
                       child: Text(
-                        'Appointment Time',
+                        'Diagnosis',
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
                           fontWeight: FontWeight.w500,
@@ -166,7 +245,7 @@ class CompletedAssesment extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text('09:00'),
+                    child: Text(appointmentResult[i]['Diagnosis']),
                   ),
                 ],
               ),
@@ -180,7 +259,7 @@ class CompletedAssesment extends StatelessWidget {
                         bottom: 8,
                       ),
                       child: Text(
-                        'Action',
+                        'View',
                         style: TextStyle(
                           color: Theme.of(context).accentColor,
                           fontWeight: FontWeight.w500,
@@ -189,81 +268,237 @@ class CompletedAssesment extends StatelessWidget {
                     ),
                   ),
                   Flexible(
-                    child: Text(
-                        'Consult | Prev Consultation | Reschedule | Cancel | Emr | Video Consultation'),
+                    child: Wrap(children: [
+                      Text('Detail'),
+                      Text(' | '),
+                      Text('EMR'),
+                      Text(' | '),
+                      Text('View Assessment'),
+                      Text(' | '),
+                      Text('Reports'),
+                    ]),
                   ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-    );
+      ));
+      i++;
+    }
+    return cards;
   }
 
   Widget actionButtons(BuildContext context) {
-    return ButtonBar(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          width: Configuration.width * .4,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: RaisedButton(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: RaisedButton(
+        color: Theme.of(context).accentColor,
+        textColor: Colors.white,
+        child: const Text(
+          'Search',
+        ),
+        padding: EdgeInsets.only(
+          top: 15,
+          bottom: 15,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+          side: BorderSide(
             color: Theme.of(context).accentColor,
-            textColor: Colors.white,
-            child: const Text(
-              'Save',
-            ),
-            padding: EdgeInsets.only(
-              top: 15,
-              bottom: 15,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-              side: BorderSide(
-                color: Theme.of(context).accentColor,
-              ),
-            ),
-            onPressed: onSaveAndPrint,
           ),
         ),
-        Container(
-          width: Configuration.width * .4,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: RaisedButton(
-            color: Colors.white,
-            textColor: Theme.of(context).accentColor,
-            child: const Text(
-              'Save & Print',
-            ),
-            padding: EdgeInsets.all(15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-              side: BorderSide(
-                color: Theme.of(context).accentColor,
-              ),
-            ),
-            onPressed: onSave,
-          ),
-        ),
-      ],
+        onPressed: _loadData,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: Configuration.height * .58,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: appointments + 1,
-        itemBuilder: (ctx, index) {
-          if ((index + 1) == (appointments + 1))
-            return this.actionButtons(context);
-          else {
-            return this.getPatientDetail(context, index);
-          }
-        },
+      padding: EdgeInsets.all(Configuration.pagePadding),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: Configuration.fieldGap),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Name',
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+              ),
+              textAlign: TextAlign.start,
+              controller: patientName,
+              keyboardType: TextInputType.text,
+              onFieldSubmitted: (_) {
+                FocusScope.of(context).requestFocus(_mobileNumber);
+              },
+              validator: (value) {
+                if (value != null && value != "")
+                  return null;
+                else
+                  return "Patient name is required field";
+              },
+              onSaved: (value) {
+                print(value);
+              },
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: Configuration.fieldGap),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Enter Mobile Number',
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+              ),
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.number,
+              controller: mobileNum,
+              onFieldSubmitted: (_) {
+                FocusScope.of(context).requestFocus(_uhid);
+              },
+              validator: (value) {
+                if (value != null && value != "")
+                  return null;
+                else
+                  return "Mobile number is required field";
+              },
+              onSaved: (value) {
+                print(value);
+              },
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: Configuration.fieldGap),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'UHID',
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                ),
+              ),
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.text,
+              onFieldSubmitted: (_) {
+                //FocusScope.of(context).requestFocus(_testCode);
+              },
+              validator: (value) {
+                return null;
+              },
+              onSaved: (value) {
+                print(value);
+              },
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  margin: EdgeInsets.only(top: Configuration.fieldGap),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Enter From Date',
+                      isDense: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    focusNode: _fromDate,
+                    controller: selectedFromDate,
+                    readOnly: true,
+                    textAlign: TextAlign.start,
+                    keyboardType: null,
+                    onFieldSubmitted: (_) {
+                      //FocusScope.of(context).requestFocus(_testCode);
+                    },
+                    validator: (value) {
+                      return null;
+                    },
+                    onSaved: (value) {
+                      print(value);
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  margin: EdgeInsets.only(top: Configuration.fieldGap),
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Enter To Date',
+                      isDense: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: const BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    focusNode: _toDate,
+                    controller: selectedToDate,
+                    readOnly: true,
+                    textAlign: TextAlign.start,
+                    keyboardType: null,
+                    onFieldSubmitted: (_) {
+                      //FocusScope.of(context).requestFocus(_testCode);
+                    },
+                    validator: (value) {
+                      return null;
+                    },
+                    onSaved: (value) {
+                      print(value);
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          this.actionButtons(context),
+          (isAppointmentLoaded && appointmentResult.length > 0)
+              ? Column(
+                  children: this._getAppointmentCard(context),
+                )
+              : Container(
+                  margin: EdgeInsets.only(top: 20),
+                  child: Text(
+                    'No record found',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+        ],
       ),
     );
   }

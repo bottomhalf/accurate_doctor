@@ -93,6 +93,25 @@ class Configuration {
     }
   }
 
+  static Future<DateTime> getDatePicker(BuildContext context) async {
+    DateTime selectedDate = null;
+    final selectedDateTime = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now().subtract(Duration(days: 100 * 365)),
+      lastDate: DateTime.now(),
+    );
+
+    if (selectedDateTime != null) {
+      selectedDate = selectedDateTime;
+      // selectedDate.text = DateFormat.yMd().format(selectedDateTime);
+    } else {
+      selectedDate = null;
+      // selectedDate.text = DateFormat.yMd().format(userDetail.DateOfBirth);
+    }
+    return selectedDate;
+  }
+
   static Future<void> showPopup(
       BuildContext context, String title, List<String> msgs) {
     return showDialog(

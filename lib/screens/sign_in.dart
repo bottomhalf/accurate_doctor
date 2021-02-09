@@ -43,6 +43,7 @@ class _SignInPageState extends State<SignInPage> {
       isFormSubmitted = true;
     });
 
+    Configuration.isDoctor = false;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       http = AjaxCall.getInstance;
       db = LocalDb.internal();
@@ -127,8 +128,20 @@ class _SignInPageState extends State<SignInPage> {
           "strOrganization": ""
         }).then((value) {
           if (value != null) {
+            PersonalDetailModal personalDetail;
+            var data = json.decode(value);
+            print('Status message: ${data['strMessage']}. Value: $value');
+            if (data['strMessage'] != null) {
+              setState(() {
+                isFormSubmitted = false;
+              });
+              Fluttertoast.showToast(msg: "Invalid username or password.");
+              return;
+            }
+
+            personalDetail = PersonalDetailModal.fromJson(data);
             this.http.post("Common/GetPendingAppointmentDetails",
-                {"DocId": userDetail.UserId}).then((jsonNotifications) {
+                {"DocId": personalDetail.intUserId}).then((jsonNotifications) {
               List<dynamic> notifications = json.decode(jsonNotifications);
               if (notifications != null && notifications.length > 0) {
                 //print('Notification count: ${notifications.length}');
@@ -136,8 +149,9 @@ class _SignInPageState extends State<SignInPage> {
               } else {
                 userDetail.notificationCount = 0;
               }
+
               userDetail.isDoctor = true;
-              this.buildPersonalDetail(value);
+              this.buildPersonalDetail(personalDetail);
             });
           } else {
             setState(() {
@@ -150,15 +164,13 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void buildPersonalDetail(dynamic value) {
-    PersonalDetailModal personalDetail;
-    var data = json.decode(value);
-    personalDetail = PersonalDetailModal.fromJson(data);
-    if (Configuration.isDoctor) userDetail.UserId = personalDetail.intUserId;
+  void buildPersonalDetail(PersonalDetailModal personalDetail) {
+    if (personalDetail != null) {
+      if (Configuration.isDoctor) userDetail.UserId = personalDetail.intUserId;
 
-    userDetail.strOrganization = personalDetail.strOrganization;
-    //print('Branch Id: ${userDetail.strOrganization}');
-    String values = ''' values(
+      userDetail.strOrganization = personalDetail.strOrganization;
+      //print('Branch Id: ${userDetail.strOrganization}');
+      String values = ''' values(
             ${userDetail.UserId},
             '${personalDetail.strFirstName}',
             '${personalDetail.strLastName}',
@@ -177,26 +189,30 @@ class _SignInPageState extends State<SignInPage> {
             '${userDetail.customerId}',
             ${userDetail.isDoctor ? 1 : 0}) ''';
 
-    personalDetail.insertValue(values, userDetail.UserId).then((value) {
-      if (value) {
-        Future.delayed(const Duration(seconds: 0), () {
-          PersonalDetailModal.userExists().then((value) {
-            if (value) {
-              print('User exists');
-              Navigator.of(context)
-                  .pushReplacementNamed(NavigationPage.Dashboard);
-            } else {
-              print('User not exists');
-              setState(() {
-                isFormSubmitted = false;
-              });
-            }
+      personalDetail.insertValue(values, userDetail.UserId).then((value) {
+        if (value) {
+          Future.delayed(const Duration(seconds: 0), () {
+            PersonalDetailModal.userExists().then((value) {
+              if (value) {
+                print('User exists');
+                Navigator.of(context)
+                    .pushReplacementNamed(NavigationPage.Dashboard);
+              } else {
+                print('User not exists');
+                setState(() {
+                  isFormSubmitted = false;
+                });
+              }
+            });
           });
-        });
-      } else {
-        Fluttertoast.showToast(msg: 'Server error. Please contact admin.');
-      }
-    });
+        } else {
+          Fluttertoast.showToast(msg: 'Server error. Please contact admin.');
+          setState(() {
+            isFormSubmitted = false;
+          });
+        }
+      });
+    }
   }
 
   void buildUserObject(dynamic value) {
@@ -213,9 +229,11 @@ class _SignInPageState extends State<SignInPage> {
       http
           .get("PatientProfile/GetPatientProfileInfo/${userDetail.UserId}")
           .then((patientInfo) {
-        print('Patient info ${patientInfo}');
         if (patientInfo != null) {
-          this.buildPersonalDetail(patientInfo);
+          PersonalDetailModal personalDetail;
+          var data = json.decode(patientInfo);
+          personalDetail = PersonalDetailModal.fromJson(data);
+          this.buildPersonalDetail(personalDetail);
         } else {
           setState(() {
             isFormSubmitted = false;

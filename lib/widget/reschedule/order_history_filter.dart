@@ -8,17 +8,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 
-class OrderHistoryFilter extends StatefulWidget {
-  List<dynamic> serviceTypes;
-  List<dynamic> booked;
-
-  OrderHistoryFilter({this.serviceTypes, this.booked});
-
+class RescheduleOrderHistoryFilter extends StatefulWidget {
   @override
-  _OrderHistoryFilterState createState() => _OrderHistoryFilterState();
+  _RescheduleOrderHistoryFilterState createState() =>
+      _RescheduleOrderHistoryFilterState();
 }
 
-class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
+class _RescheduleOrderHistoryFilterState
+    extends State<RescheduleOrderHistoryFilter> {
   final _form = GlobalKey<FormState>();
   final _orderDate = TextEditingController();
   final _scheduleDate = TextEditingController();
@@ -28,7 +25,9 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
   List<dynamic> orderHistoryList;
   bool isFiltering = false;
 
-  var filterRequest = {
+  List<dynamic> serviceTypes = [];
+  List<dynamic> booked = [];
+  dynamic searchQuery = {
     "intPatientId": -1,
     "intServiceTypeId": 0,
     "intStatusId": 0,
@@ -38,8 +37,17 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     http = AjaxCall.getInstance;
+    serviceTypes.add({
+      "intServiceTypeId": -1,
+      "strServiceType": "All Service",
+      "strSpecialityName": null
+    });
+
+    booked.add({"intStatusId": -1, "strStatus": "Status"});
+
     filterRequest = {
       "intPatientId": -1,
       "intServiceTypeId": 0,
@@ -47,8 +55,64 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
       "strOrderDate": "",
       "strScheduleDate": ""
     };
+
     this.loadData();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      http.get("Common/GetServicetype").then((serviceStateData) {
+        if (serviceStateData != null) {
+          List<dynamic> data = json.decode(serviceStateData);
+          serviceTypes = [];
+          serviceTypes.add({
+            "intServiceTypeId": -1,
+            "strServiceType": "All Service",
+            "strSpecialityName": null
+          });
+
+          if (data != null) {
+            int index = 0;
+            while (index < data.length) {
+              this.serviceTypes.add(data.elementAt(index));
+              index++;
+            }
+          }
+        }
+        setState(() {
+          booked = booked;
+          serviceTypes = serviceTypes;
+        });
+      });
+
+      http.get("Common/GetStatusList").then((bookedStateDate) {
+        if (bookedStateDate != null) {
+          List<dynamic> data = json.decode(bookedStateDate);
+          booked = [];
+          booked.add({"intStatusId": -1, "strStatus": "Status"});
+
+          if (data != null) {
+            int index = 0;
+            while (index < data.length) {
+              this.booked.add(data.elementAt(index));
+              index++;
+            }
+          }
+
+          setState(() {
+            booked = booked;
+            serviceTypes = serviceTypes;
+          });
+        }
+      });
+    });
   }
+
+  var filterRequest = {
+    "intPatientId": -1,
+    "intServiceTypeId": 0,
+    "intStatusId": 0,
+    "strOrderDate": "",
+    "strScheduleDate": ""
+  };
 
   Future<void> _getDatePicker(BuildContext context, bool isOrderDate) async {
     final selectedDateTime = await showDatePicker(
@@ -68,9 +132,9 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
     }
   }
 
-  void loadData() {
+  Future<void> loadData() async {
     filterRequest["intPatientId"] = userDetail.UserId;
-    http
+    await http
         .post("AppointmentsCommon/GetPatientOrdersDetail", filterRequest)
         .then((value) {
       if (value != null) {
@@ -100,6 +164,13 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
     }
   }
 
+  Widget _recordNotFound() {
+    return Text(
+      'No history found',
+      style: TextStyle(color: Colors.red, fontSize: 16),
+    );
+  }
+
   List<Widget> _bindOrderHistoryCards(BuildContext context) {
     List<Widget> cardWidgets = [];
     int index = 0;
@@ -109,10 +180,7 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
         padding: EdgeInsets.only(
           top: 10,
         ),
-        child: Text(
-          'No history found',
-          style: TextStyle(color: Colors.red, fontSize: 16),
-        ),
+        child: _recordNotFound(),
       ));
     } else {
       while (index < this.orderHistoryList.length) {
@@ -368,6 +436,7 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(Configuration.pagePadding),
       child: Form(
         key: _form,
         child: Column(
@@ -400,7 +469,6 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
                       },
                       value: -1,
                       items: this
-                          .widget
                           .serviceTypes
                           .map((e) => DropdownMenuItem(
                                 child: Text(
@@ -459,7 +527,6 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
                       },
                       value: -1,
                       items: this
-                          .widget
                           .booked
                           .map((e) => DropdownMenuItem(
                                 child: Text(
@@ -673,7 +740,13 @@ class _OrderHistoryFilterState extends State<OrderHistoryFilter> {
                     ),
                   )
                 : Column(
-                    children: this._bindOrderHistoryCards(context),
+                    children: this.orderHistoryList != null
+                        ? this._bindOrderHistoryCards(context)
+                        : [
+                            Container(
+                              child: _recordNotFound(),
+                            )
+                          ],
                   ),
           ],
         ),

@@ -27,6 +27,22 @@ class UserDetail {
   String _uniqueId;
   int _notificationCount = 0;
   String _strOrganization;
+  String _specility;
+  int _specilityId;
+
+  int get specilityId => _specilityId;
+
+  set specilityId(int value) {
+    _specilityId = value;
+  }
+
+  String _registrationNumber;
+
+  String get specility => _specility;
+
+  set specility(String value) {
+    _specility = value;
+  }
 
   String get strOrganization => _strOrganization;
 
@@ -221,5 +237,11 @@ class UserDetail {
 
   set uniqueId(String value) {
     _uniqueId = value;
+  }
+
+  String get registrationNumber => _registrationNumber;
+
+  set registrationNumber(String value) {
+    _registrationNumber = value;
   }
 }

@@ -188,25 +188,24 @@ class _PersonalDetailState extends State<PersonalDetail> {
                 }
               });
 
-              if (_filePath != null) {
+              if (_filePath != null && this.isPictureAval) {
                 http
-                    .submit(_filePath, "Registration/SaveImageFile")
+                    .submit(_filePath, this.userDetail.UserId.toString(),
+                        "Registration/SaveImageFile")
                     .then((value) {
                   if (value == null) {
                     Fluttertoast.showToast(msg: "Fail to upload image");
-                  }
-                });
-              }
-
-              if (this.base64Data != null) {
-                http.post("Registration/SaveImageFile", {
-                  "UploadedImage": this.base64Data,
-                  "Id": userDetail.UserId,
-                }).then((value) {
-                  //print('-----------------------------------------------------------------');
-                  //print('Print Response: ${value}');
-                  if (value == null) {
-                    Fluttertoast.showToast(msg: "Fail to upload image");
+                  } else {
+                    http
+                        .get(
+                            "PatientProfile/GetPatientProfileInfo/${userDetail.UserId}")
+                        .then((profileDetail) {
+                      if (profileDetail != null) {
+                        dynamic userProfileDetail = json.decode(profileDetail);
+                        this.userDetail.imagePath =
+                            userProfileDetail['strImagePath'];
+                      }
+                    });
                   }
                 });
               }

@@ -19,7 +19,7 @@ import 'package:accurate_doctor/screens/upload_consultation.dart';
 import 'package:accurate_doctor/widget/reschedule/appointment_reports.dart';
 
 import './modal/Configuration.dart';
-import './screens/manage_reschedule.dart';
+import './screens/reschedule.dart';
 import './screens/my_health.dart';
 import './screens/billing_and_payment.dart';
 import './screens/second_opinion.dart';
@@ -30,7 +30,7 @@ import './screens/appointments.dart';
 import './screens/my_profile.dart';
 import './screens/dashboard.dart';
 import './screens/forgot_password.dart';
-import './screens/generate_password.dart';
+import './screens/reset_password.dart';
 import './screens/sign_in.dart';
 import './screens/opt_Varification.dart';
 import './screens/signup.dart';

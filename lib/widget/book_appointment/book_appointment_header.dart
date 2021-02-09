@@ -17,7 +17,8 @@ class BookAppointmentHeader extends StatefulWidget {
 
 class _BookAppointmentHeaderState extends State<BookAppointmentHeader> {
   AjaxCall http = AjaxCall.getInstance;
-  String dayAfterNextDate = DateFormat('EEEE').format(DateTime.now());
+  String dayAfterNextDate =
+      DateFormat('EEEE').format(DateTime.now().add(Duration(days: 2)));
   bool isForToday = true;
   bool isForTomorrow = false;
   bool isForDayAfterTomorrow = false;

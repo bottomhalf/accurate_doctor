@@ -25,6 +25,13 @@ class _OrderHistoryState extends State<OrderHistory> {
     // TODO: implement initState
     super.initState();
     http = AjaxCall.getInstance;
+    serviceTypes.add({
+      "intServiceTypeId": -1,
+      "strServiceType": "All Service",
+      "strSpecialityName": null
+    });
+    booked.add({"intStatusId": -1, "strStatus": "Status"});
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       http.get("Common/GetServicetype").then((serviceStateData) {
         if (serviceStateData != null) {

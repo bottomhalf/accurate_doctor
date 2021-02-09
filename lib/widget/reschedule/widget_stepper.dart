@@ -242,36 +242,43 @@ class _WidgetStepperState extends State<WidgetStepper> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          height: Configuration.height * .15,
-          child: ScrollablePositionedList.builder(
-            itemCount: this.itemModalDetail.length,
-            itemScrollController: itemScrollController,
-            itemPositionsListener: itemPositionsListener,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (ctx, index) {
-              return CircularWizardBox(
-                radius: 30,
-                goToIndexedWizard: _moveTo,
-                index: index,
-                title: this.itemModalDetail.elementAt(index).title,
-                righttWing: (this.itemModalDetail.length - 1) == index ? 0 : 20,
-                leftWing: index == 0 ? 0 : 20,
-                isCompleted: this.itemModalDetail.elementAt(index).isCompleted,
-                isInProgress:
-                    this.itemModalDetail.elementAt(index).isInProgress,
-              );
-            },
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            margin: widget.isMyOrder
+                ? EdgeInsets.all(0)
+                : EdgeInsets.only(left: 50, right: 50),
+            alignment: Alignment.topRight,
+            height: Configuration.height * .15,
+            child: ScrollablePositionedList.builder(
+              itemCount: this.itemModalDetail.length,
+              itemScrollController: itemScrollController,
+              itemPositionsListener: itemPositionsListener,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (ctx, index) {
+                return CircularWizardBox(
+                  radius: 30,
+                  goToIndexedWizard: _moveTo,
+                  index: index,
+                  title: this.itemModalDetail.elementAt(index).title,
+                  righttWing:
+                      (this.itemModalDetail.length - 1) == index ? 0 : 20,
+                  leftWing: index == 0 ? 0 : 20,
+                  isCompleted:
+                      this.itemModalDetail.elementAt(index).isCompleted,
+                  isInProgress:
+                      this.itemModalDetail.elementAt(index).isInProgress,
+                );
+              },
+            ),
           ),
-        ),
-        Container(
-          child: this.getCurrentWizardWidget(),
-        )
-      ],
+          Container(
+            child: this.getCurrentWizardWidget(),
+          )
+        ],
+      ),
     );
   }
 }

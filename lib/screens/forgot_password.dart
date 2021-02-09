@@ -1,5 +1,6 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
+import 'package:accurate_doctor/screens/sign_in.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:convert';
@@ -19,20 +20,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   bool isSubmited = false;
   double pageHeight = 0;
   double boxSize = 50;
+  SignMode _character = SignMode.Customer;
+  AjaxCall http;
 
-  void verifyUserEmail() {
-    final state = _form.currentState.validate();
-    _form.currentState.save();
-
-    if (state) {
-      AjaxCall http = AjaxCall.getInstance;
-      FocusScope.of(context).unfocus();
-      setState(() {
-        isSubmited = !isSubmited;
-      });
-      Future.delayed(Duration(seconds: 1)).then((value) {
-        http.post("Login/PatientForgotPassword",
-            {"strEmail": email.text.trim(), "mailto": "Yes"}).then((value) {
+  void sendCustomerPassword() {
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      http.post("Login/PatientForgotPassword",
+          {"strEmail": email.text.trim(), "mailto": "Yes"}).then((value) {
+        if (value != null) {
           var userDetail = json.decode(value);
           setState(() {
             isSubmited = !isSubmited;
@@ -47,9 +42,69 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               'Please contact to admin'
             ]).then((value) => print('working'));
           }
-        });
+        } else {
+          Fluttertoast.showToast(
+              msg: 'Fail to reset. Please contact to admin.');
+          setState(() {
+            isSubmited = false;
+          });
+        }
       });
+    });
+  }
+
+  void sendProviderPassword() {
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      http.post("Login/ForgotPassword", {"strEmail": email.text.trim()}).then(
+          (value) {
+        if (value != null) {
+          var passwordStatus = json.decode(value);
+          setState(() {
+            isSubmited = !isSubmited;
+          });
+          if (passwordStatus['Status'] == "Success") {
+            Configuration.showPopup(context, 'Forgot Password Status', [
+              'A reset email has been sent to your registered mail id',
+            ]).then((value) => Navigator.of(context).pop());
+          } else {
+            Configuration.showPopup(context, 'Forgot Password Status', [
+              'Fail to verify your email id',
+              'Please contact to admin'
+            ]).then((value) => print('working'));
+          }
+        } else {
+          Fluttertoast.showToast(
+              msg: 'Fail to reset. Please contact to admin.');
+          setState(() {
+            isSubmited = false;
+          });
+        }
+      });
+    });
+  }
+
+  void verifyUserEmail() {
+    final state = _form.currentState.validate();
+    _form.currentState.save();
+
+    if (state) {
+      http = AjaxCall.getInstance;
+      FocusScope.of(context).unfocus();
+      setState(() {
+        isSubmited = !isSubmited;
+      });
+
+      if (Configuration.isDoctor)
+        this.sendProviderPassword();
+      else
+        this.sendCustomerPassword();
     }
+  }
+
+  @override
+  void initState() {
+    Configuration.isDoctor = false;
+    super.initState();
   }
 
   @override
@@ -171,6 +226,61 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 SizedBox(
                   height: _fieldGap,
+                ),
+                Container(
+                  width: Configuration.width,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Row(children: [
+                          Radio(
+                            value: SignMode.Customer,
+                            groupValue: _character,
+                            onChanged: (SignMode value) {
+                              if (value == SignMode.Customer)
+                                Configuration.isDoctor = false;
+                              else
+                                Configuration.isDoctor = true;
+                              setState(() {
+                                _character = value;
+                              });
+                            },
+                          ),
+                          Text(
+                            'Patient',
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                            ),
+                          ),
+                        ]),
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Radio(
+                              value: SignMode.Provider,
+                              groupValue: _character,
+                              onChanged: (SignMode value) {
+                                if (value == SignMode.Customer)
+                                  Configuration.isDoctor = false;
+                                else
+                                  Configuration.isDoctor = true;
+                                setState(() {
+                                  _character = value;
+                                });
+                              },
+                            ),
+                            Text(
+                              'Provider',
+                              style: TextStyle(
+                                color: Theme.of(context).accentColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

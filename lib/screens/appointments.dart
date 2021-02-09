@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../services/ajax_call.dart';
 import '../navigation/Constants.dart';
@@ -161,12 +161,17 @@ class _AppointmentState extends State<Appointment> {
     }
   }
 
-  void fetchData(String searchValue) {
-    if (searchValue != null && searchValue.isNotEmpty) {
+  void fetchData(String searchValue, dynamic currentDoctor) {
+    if (searchValue != null &&
+        searchValue.isNotEmpty &&
+        currentDoctor != null) {
       setState(() {
         isLoadingCompleted = true;
+        args = currentDoctor;
       });
       this.loadData(searchValue);
+    } else {
+      Fluttertoast.showToast(msg: "Invalid search. Please contact to admin.");
     }
   }
 

@@ -43,7 +43,7 @@ class _BookAppointmentState extends State<BookAppointment> {
         final slotsDetail =
             await http.post('AppointmentsCommon/GetDoctorTimeSlots', {
           "intDoctorId": this.userId,
-          "strBookDate": DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          "strBookDate": DateFormat('yyyy-MM-dd').format(bookingSlotDate),
         });
         if (slotsDetail != null) {
           presentDateAvailableSlots = List<dynamic>();
@@ -112,6 +112,7 @@ class _BookAppointmentState extends State<BookAppointment> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       int param = ModalRoute.of(context).settings.arguments as int;
+      bookingSlotDate = DateTime.now();
       if (param != null) {
         setState(() {
           userId = param;
@@ -183,9 +184,12 @@ class _BookAppointmentState extends State<BookAppointment> {
 
       setState(() {
         bindingSlot = updatedSlots;
+        isDataAvailable = false;
         slotForDay = slotForDay;
         bookingSlotDate = bookingSlotDate;
       });
+
+      _loadUserData();
     });
   }
 

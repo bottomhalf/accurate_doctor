@@ -154,12 +154,26 @@ class _LoadingScreenState extends State<LoadingScreen> {
                   ),
                 ),
                 Positioned(
-                  child: Icon(
-                    FontAwesome.caret_right,
-                    size: 50,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushReplacementNamed(NavigationPage.SignIn);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        top: 20,
+                        bottom: 20,
+                        left: 20,
+                        right: 20,
+                      ),
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
-                  bottom: 118,
-                  right: -5,
+                  top: 40,
+                  right: 10,
                 )
               ],
             ),

@@ -1,4 +1,7 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:accurate_doctor/services/ajax_call.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../navigation/Constants.dart';
 import '../widget/dashboard/app_bar.dart';
@@ -8,6 +11,7 @@ import 'package:flutter/widgets.dart';
 import '../widget/common/bottom_navigation.dart';
 import '../widget/drawer/app_drawer.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class Dashboard extends StatefulWidget {
   @override

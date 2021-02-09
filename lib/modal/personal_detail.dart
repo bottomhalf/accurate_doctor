@@ -184,9 +184,8 @@ class PersonalDetailModal {
         userDetail.firstName = userResult['strFirstName'];
         userDetail.lastName = userResult['strLastName'];
         userDetail.Gender = userResult['strGender'];
-        userDetail.DateOfBirth = userResult['strDOB'] != null
-            ? DateTime.parse(userResult['strDOB'])
-            : null;
+        userDetail.DateOfBirth =
+            userResult['strDOB'] != null ? DateTime.now() : null;
         userDetail.MobileNo = userResult['strMobileNo'];
         userDetail.Email = userResult['strEmail'];
         userDetail.exerience = userResult['strExperience'];

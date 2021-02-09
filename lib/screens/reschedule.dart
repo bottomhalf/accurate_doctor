@@ -57,9 +57,11 @@ class _ManageRescheduleState extends State<ManageReschedule> {
                         isMyOrder: true,
                       ),
                     ),
-                    Container(
-                      child: OrderHistory(),
-                    ),
+                    //OrderHistory(),
+                    WidgetStepper(
+                      items: rescheduleDataModal.getBuildModal(false),
+                      isMyOrder: false,
+                    )
                   ],
                 ),
               ),

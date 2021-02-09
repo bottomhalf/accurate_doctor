@@ -112,7 +112,7 @@ class DoctorSecondCard extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           Navigator.of(context)
-                              .pushNamed(NavigationPage.SecondOpinion);
+                              .pushNamed(NavigationPage.CaregiverCalendar);
                         },
                         child: Column(
                           children: [

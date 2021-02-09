@@ -1,3 +1,4 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/navigation/NavigationPage.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:accurate_doctor/widget/signup/formheader_title.dart';
@@ -29,7 +30,12 @@ class _SignUpFormState extends State<SignUpForm> {
   final _mobileNo = FocusNode();
   final _password = FocusNode();
   final _lastName = FocusNode();
+  final _speciality = FocusNode();
+  final _medicalregistrationno = FocusNode();
+  final _referralcode = FocusNode();
+  final _role = FocusNode();
 
+  String referralCode = '';
   bool isPrivacyPolicyFlagEnabled = false;
   TextEditingController selectedDate = TextEditingController();
   TextEditingController selectedGender = TextEditingController();
@@ -37,6 +43,8 @@ class _SignUpFormState extends State<SignUpForm> {
   AjaxCall http;
   bool isSubmitting = false;
   bool showPassword = true;
+  List<dynamic> roles = [];
+  List<dynamic> speciality = [];
 
   double pageHeight = 0;
   UserDetail userDetail;
@@ -50,7 +58,62 @@ class _SignUpFormState extends State<SignUpForm> {
     http = AjaxCall.getInstance;
     userDetail = UserDetail.instance;
     userDetail.Gender = "Male";
+    if (widget.isDoctor) {
+      Configuration.isDoctor = true;
+      this.roles = List<dynamic>();
+      this.speciality = List<dynamic>();
+
+      this.roles.add({'intRoleId': -1, 'strRoleName': 'Roles'});
+      this.speciality.add({
+        "intSpecialityId": -1,
+        "strSpecialityName": "Speciality",
+        "strImagePath": null
+      });
+      _loadRoles();
+    } else
+      Configuration.isDoctor = false;
     super.initState();
+  }
+
+  void _loadRoles() {
+    this.http.get("Common/GetRoles").then((roleValue) {
+      if (roleValue != null) {
+        List<dynamic> roleData = json.decode(roleValue);
+        if (roleData != null) {
+          roleData.add({'intRoleId': -1, 'strRoleName': 'Roles'});
+          this.roles = List<dynamic>();
+          setState(() {
+            this.roles = roleData;
+          });
+        } else {
+          Fluttertoast.showToast(msg: 'Unable to load roles.');
+        }
+      }
+    });
+  }
+
+  void _loadSpeciality() {
+    this
+        .http
+        .get("Common/GetSpeciality/${userDetail.roleId}")
+        .then((specialityValue) {
+      if (specialityValue != null) {
+        List<dynamic> specialityData = json.decode(specialityValue);
+        if (specialityData != null) {
+          this.speciality = List<dynamic>();
+          specialityData.add({
+            "intSpecialityId": -1,
+            "strSpecialityName": "Speciality",
+            "strImagePath": null
+          });
+          setState(() {
+            this.speciality = specialityData;
+          });
+        } else {
+          Fluttertoast.showToast(msg: 'Unable to load roles.');
+        }
+      }
+    });
   }
 
   @override
@@ -61,6 +124,10 @@ class _SignUpFormState extends State<SignUpForm> {
     _mobileNo.dispose();
     _password.dispose();
     _lastName.dispose();
+    _speciality.dispose();
+    _medicalregistrationno.dispose();
+    _referralcode.dispose();
+    _role.dispose();
     super.dispose();
   }
 
@@ -109,7 +176,8 @@ class _SignUpFormState extends State<SignUpForm> {
             FlatButton(
               onPressed: () {
                 Navigator.popUntil(context, (route) => route.isFirst);
-                Navigator.of(context).pop();
+                Navigator.of(context)
+                    .pushReplacementNamed(NavigationPage.SignIn);
               },
               child: Text(
                 'Ok',
@@ -131,6 +199,7 @@ class _SignUpFormState extends State<SignUpForm> {
     final state = _form.currentState.validate();
     _form.currentState.save();
     if (state) {
+      Configuration.isDoctor = userDetail.isDoctor;
       List<String> completeName = userDetail.FullName.split(" ");
       if (completeName.length > 1) {
         firstName = completeName.elementAt(0);
@@ -142,49 +211,95 @@ class _SignUpFormState extends State<SignUpForm> {
         isSubmitting = true;
       });
 
-      this.http.post("Customerservice/CustomerRegistration", {
-        "strDOB": DateFormat('yyyy-MM-dd').format(userDetail.DateOfBirth),
-        "strEmail": userDetail.Email,
-        "strFirstName": userDetail.FullName,
-        "strGender": userDetail.Gender,
-        "strLastName": userDetail.FullName,
-        "strMobileNo": userDetail.MobileNo.toString(),
-        "strPassword": userDetail.Password,
-        "strSourceOne": "",
-        "intLocationId": "0",
-        "intCityId": "0"
-      }).then((value) {
-        print(value);
-        if (value.toString().isNotEmpty) {
-          var result = json.decode(value);
-          if (result["code"] == "200") {
-            showPopup();
-          } else {
-            setState(() {
-              this.isSubmitting = false;
-            });
-
-            final snackBar = SnackBar(
-              content: Text(result["Status"]),
-              action: SnackBarAction(
-                label: '',
-                onPressed: () {
-                  // Some code to undo the change.
-                },
-              ),
-            );
-
-            // Find the Scaffold in the widget tree and use
-            // it to show a SnackBar.
-            Scaffold.of(context).showSnackBar(snackBar);
-          }
-        } else {
-          Fluttertoast.showToast(msg: 'Fail to register. Contact admin.');
-        }
-      });
+      if (widget.isDoctor) {
+        Configuration.isDoctor = true;
+        this.registerProvider(firstName, lastName);
+      } else {
+        Configuration.isDoctor = false;
+        this.registerCustomer(firstName, lastName);
+      }
     } else {
       Fluttertoast.showToast(msg: 'Entered value is invalid.');
     }
+  }
+
+  void registerProvider(String firstName, String lastName) {
+    this.http.post("Registration/CreateRegistration", {
+      "intCreatedBy": null,
+      "intRoleId": userDetail.roleId,
+      "intSpecialityId": userDetail.specilityId,
+      "intUserId": null,
+      "strDOB": DateFormat('yyyy-MM-dd').format(userDetail.DateOfBirth),
+      "strEmail": userDetail.Email,
+      "strExperience": "5",
+      "strFirstName": firstName,
+      "strGender": userDetail.Gender,
+      "strImagePath": "",
+      "strLastName": lastName,
+      "strMCINo": "52326",
+      "strMobileNo": userDetail.MobileNo.toString(),
+      "strSourceOne": "M"
+    }).then((value) {
+      if (value.toString().isNotEmpty) {
+        var result = json.decode(value);
+        if (result["Status"].toString().indexOf("Successfully") != -1) {
+          showPopup();
+        } else {
+          setState(() {
+            this.isSubmitting = false;
+          });
+
+          Fluttertoast.showToast(msg: result["Status"]);
+        }
+      } else {
+        Fluttertoast.showToast(msg: 'Fail to register. Contact admin.');
+      }
+    });
+  }
+
+  void registerCustomer(String firstName, String lastName) {
+    this.http.post("Customerservice/CustomerRegistration", {
+      "strDOB": DateFormat('yyyy-MM-dd').format(userDetail.DateOfBirth),
+      "strEmail": userDetail.Email,
+      "strFirstName": firstName,
+      "strGender": userDetail.Gender,
+      "strLastName": lastName,
+      "strMobileNo": userDetail.MobileNo.toString(),
+      "strPassword": userDetail.Password,
+      "strSourceOne": "M",
+      "intLocationId": "0",
+      "intCityId": "0"
+    }).then((value) {
+      print(value);
+      if (value.toString().isNotEmpty) {
+        var result = json.decode(value);
+        if (result["code"] == "200") {
+          showPopup();
+        } else {
+          setState(() {
+            this.isSubmitting = false;
+          });
+
+          Fluttertoast.showToast(msg: result["Status"]);
+
+/*          final snackBar = SnackBar(
+            content: Text(result["Status"]),
+            action: SnackBarAction(
+              label: '',
+              onPressed: () {
+                // Some code to undo the change.
+              },
+            ),
+          );
+
+          // Find the Scaffold in the widget tree and use
+          // it to show a SnackBar.
+          Scaffold.of(context).showSnackBar(snackBar);*/
+        }
+      } else {
+        Fluttertoast.showToast(msg: 'Fail to register. Contact admin.');
+      }
+    });
   }
 
   void handlerSelectedGender(int gender) {
@@ -461,57 +576,15 @@ class _SignUpFormState extends State<SignUpForm> {
                 },
               ),
             ),
-            Container(
-              margin: EdgeInsets.only(top: _fieldGap),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  isDense: true,
-                  prefixIcon: Icon(
-                    FontAwesome.key,
-                    color: Theme.of(context).accentColor,
-                  ),
-                  suffixIcon: InkWell(
-                    onTap: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    child: Icon(
-                      Icons.remove_red_eye,
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                      width: 1,
-                    ),
-                  ),
-                ),
-                textAlign: TextAlign.start,
-                obscureText: showPassword,
-                focusNode: _password,
-                keyboardType: TextInputType.visiblePassword,
-                onFieldSubmitted: (_) {},
-                validator: (value) {
-                  return null;
-                },
-                onSaved: (value) {
-                  userDetail.Password = value;
-                },
-              ),
-            ),
             widget.isDoctor
                 ? Container(
+                    height: 48,
                     margin: EdgeInsets.only(top: _fieldGap),
-                    child: TextFormField(
+                    child: DropdownButtonFormField<dynamic>(
                       decoration: InputDecoration(
-                        labelText: 'Speciality',
                         isDense: true,
                         prefixIcon: Icon(
-                          Icons.local_hospital,
+                          Icons.location_on,
                           color: Theme.of(context).accentColor,
                         ),
                         border: OutlineInputBorder(
@@ -522,16 +595,89 @@ class _SignUpFormState extends State<SignUpForm> {
                           ),
                         ),
                       ),
-                      textAlign: TextAlign.start,
-                      obscureText: true,
-                      focusNode: _password,
-                      keyboardType: TextInputType.visiblePassword,
-                      onFieldSubmitted: (_) {},
+                      focusNode: _role,
+                      value: -1,
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (value) {
+                        userDetail.roleId = value;
+                        _loadSpeciality();
+                        FocusScope.of(context).requestFocus(_speciality);
+                      },
+                      items: this
+                          .roles
+                          .map((e) => DropdownMenuItem(
+                                child: Text(
+                                  e['strRoleName'],
+                                  style: TextStyle(
+                                    color: e['intRoleId'] == -1
+                                        ? Theme.of(context).dividerColor
+                                        : Colors.black,
+                                  ),
+                                ),
+                                value: e['intRoleId'],
+                              ))
+                          .toList(),
                       validator: (value) {
                         return null;
                       },
                       onSaved: (value) {
-                        userDetail.Password = value;
+                        FocusScope.of(context).requestFocus(_speciality);
+                      },
+                    ),
+                  )
+                : Container(),
+            widget.isDoctor
+                ? Container(
+                    height: 48,
+                    margin: EdgeInsets.only(top: _fieldGap),
+                    child: DropdownButtonFormField<dynamic>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        prefixIcon: Icon(
+                          Icons.location_on,
+                          color: Theme.of(context).accentColor,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      focusNode: _speciality,
+                      value: -1,
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      onChanged: (value) {
+                        userDetail.specilityId = value;
+                        FocusScope.of(context)
+                            .requestFocus(_medicalregistrationno);
+                      },
+                      items: this
+                          .speciality
+                          .map((e) => DropdownMenuItem(
+                                child: Text(
+                                  e['strSpecialityName'],
+                                  style: TextStyle(
+                                    color: e['intSpecialityId'] == -1
+                                        ? Theme.of(context).dividerColor
+                                        : Colors.black,
+                                  ),
+                                ),
+                                value: e['intSpecialityId'],
+                              ))
+                          .toList(),
+                      validator: (value) {
+                        return null;
+                      },
+                      onSaved: (value) {
+                        FocusScope.of(context)
+                            .requestFocus(_medicalregistrationno);
                       },
                     ),
                   )
@@ -556,15 +702,16 @@ class _SignUpFormState extends State<SignUpForm> {
                         ),
                       ),
                       textAlign: TextAlign.start,
-                      obscureText: true,
-                      focusNode: _password,
-                      keyboardType: TextInputType.visiblePassword,
-                      onFieldSubmitted: (_) {},
+                      focusNode: _medicalregistrationno,
+                      keyboardType: TextInputType.text,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_referralcode);
+                      },
                       validator: (value) {
                         return null;
                       },
                       onSaved: (value) {
-                        userDetail.Password = value;
+                        userDetail.registrationNumber = value;
                       },
                     ),
                   )
@@ -589,7 +736,53 @@ class _SignUpFormState extends State<SignUpForm> {
                         ),
                       ),
                       textAlign: TextAlign.start,
-                      obscureText: true,
+                      focusNode: _referralcode,
+                      keyboardType: TextInputType.visiblePassword,
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(this._password);
+                      },
+                      validator: (value) {
+                        return null;
+                      },
+                      onSaved: (value) {
+                        this.referralCode = value;
+                      },
+                    ),
+                  )
+                : Container(),
+            widget.isDoctor
+                ? Container()
+                : Container(
+                    margin: EdgeInsets.only(top: _fieldGap),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        isDense: true,
+                        prefixIcon: Icon(
+                          FontAwesome.key,
+                          color: Theme.of(context).accentColor,
+                        ),
+                        suffixIcon: InkWell(
+                          onTap: () {
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
+                          },
+                          child: Icon(
+                            Icons.remove_red_eye,
+                            color: Theme.of(context).accentColor,
+                          ),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: const BorderSide(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      textAlign: TextAlign.start,
+                      obscureText: showPassword,
                       focusNode: _password,
                       keyboardType: TextInputType.visiblePassword,
                       onFieldSubmitted: (_) {},
@@ -600,8 +793,7 @@ class _SignUpFormState extends State<SignUpForm> {
                         userDetail.Password = value;
                       },
                     ),
-                  )
-                : Container(),
+                  ),
             SizedBox(
               height: 10,
             ),
