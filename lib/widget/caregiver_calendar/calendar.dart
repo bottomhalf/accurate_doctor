@@ -1,7 +1,13 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
+import 'package:accurate_doctor/services/ajax_call.dart';
+import 'package:accurate_doctor/widget/caregiver_calendar/calendar_filter.dart';
+import 'package:accurate_doctor/widget/caregiver_calendar/todays_routine_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 const double pWidth = 392.7;
 
@@ -14,6 +20,10 @@ class CustomCalendarState extends State<CustomCalendar>
     with TickerProviderStateMixin {
   /// Boolean to handle calendar expansion
   bool _expanded;
+  bool _isWeekData = false;
+  int _weekCounter = -1;
+  bool _isCurrentDayData = false;
+  bool _isMonthData = false;
 
   /// The height of an individual week row
   double collapsedHeightFactor;
@@ -44,6 +54,8 @@ class CustomCalendarState extends State<CustomCalendar>
   /// expand_more icon rotation event
   ///
   AnimationController _controller;
+  DateTime StartDate = DateTime.now();
+  DateTime EndDate = DateTime.now();
 
   /// Animation controller that handles the expand_more icon fading in/out event
   /// based on if the current month is being displayed
@@ -78,11 +90,24 @@ class CustomCalendarState extends State<CustomCalendar>
   Animatable<Color> _monthColorTween =
       ColorTween(begin: Color(0xffEC520B), end: Color(0x00EC520B));
 
+  int selectedDay = DateTime.now().day;
+  int selectedMonth = DateTime.now().month;
+  int selectedYear = DateTime.now().year;
+
+  AjaxCall http;
+  UserDetail userDetail;
+  List<dynamic> calendarData = [];
+  bool isLoading = true;
+  bool completeRefresh = false;
+
   @override
   void initState() {
     // calendar is not expanded initially
+    print('Calenda called');
     _expanded = true;
     showDate = displayDate;
+    http = AjaxCall.getInstance;
+    userDetail = UserDetail.instance;
 
     // [returnRowList] called and stored in [rowListReturned] to make use of in the next occurrences
     List<Widget> rowListReturned =
@@ -116,7 +141,38 @@ class CustomCalendarState extends State<CustomCalendar>
         children: rowListReturned,
       )
     ];
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _loadCalendarData();
+    });
     super.initState();
+  }
+
+  Future<void> _loadCalendarData() async {
+    await http.post("Common/GetCalenderAppointmentDetails", {
+      "Start_Date":
+          DateFormat('MM/dd/yyyy').format(this.StartDate), // "02/03/2021",
+      "EndDate": DateFormat('MM/dd/yyyy').format(this.EndDate),
+      "DocId": userDetail.UserId,
+      "intBranchId": userDetail.strOrganization
+    }).then((calendarResultSet) {
+      if (calendarResultSet != null) {
+        List<dynamic> result = json.decode(calendarResultSet);
+        if (result.length > 0) {
+          setState(() {
+            calendarData = result;
+            isLoading = false;
+            completeRefresh = false;
+          });
+        } else {
+          setState(() {
+            calendarData = [];
+            isLoading = false;
+            completeRefresh = false;
+          });
+        }
+      }
+    });
   }
 
   @override
@@ -124,6 +180,52 @@ class CustomCalendarState extends State<CustomCalendar>
     _controller.dispose();
     _monthController.dispose();
     super.dispose();
+  }
+
+  void filterType(bool isToday, bool isWeek, bool isMonth) {
+    DateTime _startDate = null;
+    DateTime _endDate = null;
+    if (isToday) {
+      _startDate = this.StartDate;
+      _endDate = this.StartDate;
+    } else if (isWeek) {
+      _startDate = this.StartDate;
+      _endDate = this.StartDate.add(Duration(days: 6));
+    } else if (isMonth) {
+      _startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+      _endDate = this.StartDate.add(Duration(
+          days:
+              (DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day) -
+                  1));
+    }
+    setState(() {
+      completeRefresh = true;
+      _isWeekData = isWeek;
+      _isCurrentDayData = isToday;
+      _isMonthData = isMonth;
+      this.StartDate = _startDate;
+      this.EndDate = _endDate;
+      calList = [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.min,
+          children: returnRowList(
+            DateTime(_startDate.year, _startDate.month, 1),
+          ),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.min,
+          children: returnRowList(
+            DateTime(_startDate.year, _startDate.month + 1, 1),
+          ),
+        ),
+      ];
+      //Increment showDate by a month
+      showDate = DateTime(_startDate.year, _startDate.month, 1);
+    });
+    _loadCalendarData();
+    Fluttertoast.showToast(msg: 'Please select date');
   }
 
   @override
@@ -134,197 +236,230 @@ class CustomCalendarState extends State<CustomCalendar>
     return Column(
       children: [
         Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: double.infinity,
-                height: 80,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 8 * scaleFactor,
-                    bottom: 8 * scaleFactor,
-                    left: 0,
-                    right: 0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Material(
-                        color: Colors.transparent,
-                        child: IconButton(
-                          enableFeedback: _expanded,
-                          splashRadius: _expanded ? 15.0 : 0.001,
-                          icon: AnimatedBuilder(
-                            animation: _arrowColor,
-                            builder: (BuildContext context, Widget child) =>
-                                Icon(
-                              FontAwesome.chevron_left,
-                              size: Configuration.width * .04,
-                              color: Theme.of(context).dividerColor,
-                            ),
-                          ),
-                          onPressed: () {
-                            DateTime curr = showDate;
-                            setState(() {
-                              //set calList to previous month to showDate and showDate
-                              calList = [
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: returnRowList(
-                                    DateTime(
-                                        showDate.year, showDate.month - 1, 1),
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: returnRowList(
-                                    DateTime(showDate.year, showDate.month, 1),
-                                  ),
-                                ),
-                              ];
-                              //Decrement the showDate by 1 month
-                              showDate = DateTime(
-                                  showDate.year, showDate.month - 1, 1);
-                            });
-
-                            //Fade in/out the expand icon if current month is not displayed month
-                            if (areMonthsSame(curr, DateTime.now())) {
-                              _monthController.forward();
-                              Future.delayed(Duration(milliseconds: 1), () {
-                                setState(() {});
-                              });
-                            } else if (areMonthsSame(
-                                showDate, DateTime.now())) {
-                              _monthController.reverse();
-                              Future.delayed(_kExpand, () {
-                                setState(() {});
-                              });
-                            }
-                            pageController.jumpToPage(1);
-                            pageController.previousPage(
-                                duration: _kExpand, curve: Curves.easeInOut);
-                          },
-                        ),
-                      ),
-                      // Displayed Month, Displayed Year
-                      Text(
-                        formatDate(showDate),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textScaleFactor: scaleFactor,
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: IconButton(
-                          enableFeedback: _expanded,
-                          splashRadius: _expanded ? 15.0 : 0.001,
-                          icon: AnimatedBuilder(
-                            animation: _arrowColor,
-                            builder: (BuildContext context, Widget child) =>
-                                Icon(
-                              FontAwesome.chevron_right,
-                              size: Configuration.width * .04,
-                              color: Theme.of(context).dividerColor,
-                            ),
-                          ),
-                          onPressed: () {
-                            DateTime curr = showDate;
-                            setState(() {
-                              //set calList to showDate and showDate incremented by 1 month
-                              calList = [
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: returnRowList(
-                                    DateTime(showDate.year, showDate.month, 1),
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: returnRowList(
-                                    DateTime(
-                                        showDate.year, showDate.month + 1, 1),
-                                  ),
-                                ),
-                              ];
-                              //Increment showDate by a month
-                              showDate = DateTime(
-                                  showDate.year, showDate.month + 1, 1);
-                            });
-
-                            //Fade in/out the expand icon if current month is not displayed month
-                            if (areMonthsSame(curr, DateTime.now())) {
-                              _monthController.forward();
-                              Future.delayed(Duration(milliseconds: 1), () {
-                                setState(() {});
-                              });
-                            } else if (areMonthsSame(
-                                showDate, DateTime.now())) {
-                              _monthController.reverse();
-                              Future.delayed(_kExpand, () {
-                                setState(() {});
-                              });
-                            }
-                            pageController.jumpToPage(0);
-                            pageController.nextPage(
-                                duration: _kExpand, curve: Curves.easeInOut);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              AnimatedBuilder(
-                animation: _controller.view,
-                builder: (BuildContext context, Widget child) => Container(
-                  child: Container(
-                    width: Configuration.width,
-                    padding: EdgeInsets.zero,
-                    margin: EdgeInsets.zero,
-                    height: calendarWidth * 0.6,
-                    child: PageView(
-                      controller: pageController,
-                      scrollDirection: Axis.horizontal,
-                      children: calList,
-                      //the pageview is not swipable as this affects the changing months
-                      physics: NeverScrollableScrollPhysics(),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          padding: EdgeInsets.only(top: Configuration.pagePadding),
+          child: CalendarFilter(filterType: this.filterType),
         ),
-/*        IconButton(
-          //The splash effect is only visible when the animation has been completed
-          splashRadius: _monthController.view.value == 0.0 ? 18.0 : 0.001,
-          //[handleTap] only works when the animation has been completed
-          onPressed: _monthController.view.value == 0.0 ? _handleTap : null,
-          enableFeedback: _monthController.view.value == 0.0,
-          icon: AnimatedBuilder(
-            animation: _monthColor,
-            builder: (BuildContext context, Widget child) => RotationTransition(
-              turns: _iconTurns,
-              child: Icon(
-                Icons.camera,
-                size: 35 * scaleFactor,
-                color: _monthColor.value,
+        completeRefresh
+            ? Container(
+                margin: EdgeInsets.only(
+                  top: 50,
+                ),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : Container(
+                padding: EdgeInsets.all(Configuration.pagePadding),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 80,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          top: 8 * scaleFactor,
+                          bottom: 8 * scaleFactor,
+                          left: 0,
+                          right: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: IconButton(
+                                enableFeedback: _expanded,
+                                splashRadius: _expanded ? 15.0 : 0.001,
+                                icon: AnimatedBuilder(
+                                  animation: _arrowColor,
+                                  builder:
+                                      (BuildContext context, Widget child) =>
+                                          Icon(
+                                    FontAwesome.chevron_left,
+                                    size: Configuration.width * .04,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  DateTime curr = showDate;
+                                  setState(() {
+                                    //set calList to previous month to showDate and showDate
+                                    calList = [
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: returnRowList(
+                                          DateTime(showDate.year,
+                                              showDate.month - 1, 1),
+                                        ),
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: returnRowList(
+                                          DateTime(
+                                              showDate.year, showDate.month, 1),
+                                        ),
+                                      ),
+                                    ];
+                                    //Decrement the showDate by 1 month
+                                    showDate = DateTime(
+                                        showDate.year, showDate.month - 1, 1);
+                                  });
+
+                                  //Fade in/out the expand icon if current month is not displayed month
+                                  if (areMonthsSame(curr, DateTime.now())) {
+                                    _monthController.forward();
+                                    Future.delayed(Duration(milliseconds: 1),
+                                        () {
+                                      setState(() {});
+                                    });
+                                  } else if (areMonthsSame(
+                                      showDate, DateTime.now())) {
+                                    _monthController.reverse();
+                                    Future.delayed(_kExpand, () {
+                                      setState(() {});
+                                    });
+                                  }
+                                  pageController.jumpToPage(1);
+                                  pageController.previousPage(
+                                      duration: _kExpand,
+                                      curve: Curves.easeInOut);
+                                },
+                              ),
+                            ),
+                            // Displayed Month, Displayed Year
+                            Text(
+                              formatDate(showDate),
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textScaleFactor: scaleFactor,
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: IconButton(
+                                enableFeedback: _expanded,
+                                splashRadius: _expanded ? 15.0 : 0.001,
+                                icon: AnimatedBuilder(
+                                  animation: _arrowColor,
+                                  builder:
+                                      (BuildContext context, Widget child) =>
+                                          Icon(
+                                    FontAwesome.chevron_right,
+                                    size: Configuration.width * .04,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  DateTime curr = showDate;
+                                  setState(() {
+                                    //set calList to showDate and showDate incremented by 1 month
+                                    calList = [
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: returnRowList(
+                                          DateTime(
+                                              showDate.year, showDate.month, 1),
+                                        ),
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: returnRowList(
+                                          DateTime(showDate.year,
+                                              showDate.month + 1, 1),
+                                        ),
+                                      ),
+                                    ];
+                                    //Increment showDate by a month
+                                    showDate = DateTime(
+                                        showDate.year, showDate.month + 1, 1);
+                                  });
+
+                                  //Fade in/out the expand icon if current month is not displayed month
+                                  if (areMonthsSame(curr, DateTime.now())) {
+                                    _monthController.forward();
+                                    Future.delayed(Duration(milliseconds: 1),
+                                        () {
+                                      setState(() {});
+                                    });
+                                  } else if (areMonthsSame(
+                                      showDate, DateTime.now())) {
+                                    _monthController.reverse();
+                                    Future.delayed(_kExpand, () {
+                                      setState(() {});
+                                    });
+                                  }
+                                  pageController.jumpToPage(0);
+                                  pageController.nextPage(
+                                      duration: _kExpand,
+                                      curve: Curves.easeInOut);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    AnimatedBuilder(
+                      animation: _controller.view,
+                      builder: (BuildContext context, Widget child) =>
+                          Container(
+                        child: Container(
+                          width: Configuration.width,
+                          padding: EdgeInsets.zero,
+                          margin: EdgeInsets.zero,
+                          height: calendarWidth * 0.6,
+                          child: PageView(
+                            controller: pageController,
+                            scrollDirection: Axis.horizontal,
+                            children: calList,
+                            //the pageview is not swipable as this affects the changing months
+                            physics: NeverScrollableScrollPhysics(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-        ),*/
+        completeRefresh
+            ? Container()
+            : isLoading
+                ? Container(
+                    padding: EdgeInsets.only(
+                      left: Configuration.fieldGap * 2,
+                    ),
+                    child: Row(
+                      children: [
+                        CircularProgressIndicator(),
+                        Container(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Text(
+                            'Loading ...',
+                            style: TextStyle(
+                              color: Theme.of(context).accentColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : TodaysRoutineDetail(
+                    calendarData: calendarData,
+                    selectedDate: StartDate,
+                  ),
       ],
     );
   }
@@ -430,8 +565,29 @@ class CustomCalendarState extends State<CustomCalendar>
     return rowValueList;
   }
 
+  Color _getColor(int day, int month, int year, int i) {
+    Color currentColor = Colors.transparent;
+    if (day == selectedDay &&
+        month == selectedMonth &&
+        year == selectedYear &&
+        !((i == 0 && day > 7) || (i >= 4 && day < 7))) {
+      if (_isWeekData) _weekCounter = 0;
+      currentColor = Color(0xffFFA68A);
+    } else {
+      if (_isWeekData && _weekCounter < 6 && _weekCounter >= 0) {
+        currentColor = Configuration.ColorFromHex('#b5eeff');
+        if (_weekCounter == 5) currentColor = Color(0xffFFA68A);
+        _weekCounter++;
+      } else {
+        currentColor = Colors.transparent;
+      }
+    }
+    return currentColor;
+  }
+
   // Returns a list of Rows containing the weeks of a month
   List<Widget> returnRowList(DateTime start) {
+    print('Month: ${start.month}, State month: $selectedMonth');
     List<Widget> rowList = <Widget>[
       Padding(
         //do not change this padding
@@ -462,30 +618,55 @@ class CustomCalendarState extends State<CustomCalendar>
           Expanded(
             child: InkWell(
               onTap: () {
-                print(
-                    'Working - Day: ${rowValueList[i][j]} = ${DateTime.now().day}, '
-                    'Month: ${start.month} = ${DateTime.now().month}, '
-                    'Year: ${start.year} = ${DateTime.now().year}');
+                DateTime endDate =
+                    DateTime(start.year, start.month, rowValueList[i][j]);
+                if (_isWeekData) {
+                  endDate = endDate.add(Duration(days: 7));
+                }
+                setState(() {
+                  selectedDay = rowValueList[i][j];
+                  selectedMonth = start.month;
+                  selectedYear = start.year;
+                  StartDate =
+                      DateTime(start.year, start.month, rowValueList[i][j]);
+                  EndDate = endDate;
+                  isLoading = true;
+                  calList = [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.min,
+                      children: returnRowList(
+                        DateTime(start.year, start.month, 1),
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.min,
+                      children: returnRowList(
+                        DateTime(start.year, start.month + 1, 1),
+                      ),
+                    ),
+                  ];
+                  //Increment showDate by a month
+                  showDate = DateTime(start.year, start.month, 1);
+                });
+
+                _loadCalendarData();
               },
               child: Container(
                 height: 22,
                 width: 22,
                 decoration: BoxDecoration(
                   //shape: BoxShape.circle,
-                  color: rowValueList[i][j] == DateTime.now().day &&
-                          start.month == DateTime.now().month &&
-                          start.year == DateTime.now().year &&
-                          !((i == 0 && rowValueList[i][j] > 7) ||
-                              (i >= 4 && rowValueList[i][j] < 7))
-                      ? Color(0xffFFA68A)
-                      : Colors.transparent,
+                  color:
+                      _getColor(rowValueList[i][j], start.month, start.year, i),
                 ),
                 child: Center(
                   child: Text(
                     rowValueList[i][j].toString(),
-                    style: (rowValueList[i][j] == DateTime.now().day &&
-                                start.month == DateTime.now().month &&
-                                start.year == DateTime.now().year) &&
+                    style: (rowValueList[i][j] == selectedDay &&
+                                start.month == start.month &&
+                                start.year == start.year) &&
                             !((i == 0 && rowValueList[i][j] > 7) ||
                                 (i >= 4 && rowValueList[i][j] < 7))
                         ? TextStyle(
