@@ -36,4 +36,5 @@ class NavigationPage {
   static const String MyService = "/myservice";
   static const String BillingAngPaymentPage = "/billingangpaymentpage";
   static const String ManageSchedule = "/manageschedule";
+  static const String LiveChatBox = "/livechat";
 }

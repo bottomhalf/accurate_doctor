@@ -143,9 +143,38 @@ class CustomCalendarState extends State<CustomCalendar>
     ];
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _loadCalendarData();
+      if (Configuration.isDoctor)
+        _loadCalendarData();
+      else
+        _loadPatientCalendarData();
     });
     super.initState();
+  }
+
+  Future<void> _loadPatientCalendarData() async {
+    await http.post("AppointmentDetails/GetCalenderAppointmentDetails", {
+      "Start_Date":
+          DateFormat('MM/dd/yyyy').format(this.StartDate), // "02/03/2021",
+      "EndDate": DateFormat('MM/dd/yyyy').format(this.EndDate),
+      "intPatientId": userDetail.UserId
+    }).then((calendarResultSet) {
+      if (calendarResultSet != null) {
+        List<dynamic> result = json.decode(calendarResultSet);
+        if (result.length > 0) {
+          setState(() {
+            calendarData = result.take(4).toList();
+            isLoading = false;
+            completeRefresh = false;
+          });
+        } else {
+          setState(() {
+            calendarData = [];
+            isLoading = false;
+            completeRefresh = false;
+          });
+        }
+      }
+    });
   }
 
   Future<void> _loadCalendarData() async {

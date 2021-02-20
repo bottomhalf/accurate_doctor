@@ -1,6 +1,9 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
+import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:convert';
 
 class EmployerDetail extends StatefulWidget {
   dynamic personalDetail;
@@ -12,17 +15,40 @@ class EmployerDetail extends StatefulWidget {
 class _EmployerDetailState extends State<EmployerDetail> {
   final _form = GlobalKey<FormState>();
   bool isSubmiting = false;
-  bool isLoading = false;
+  bool isLoading = true;
   AjaxCall http;
+  UserDetail userDetail;
+  List<dynamic> employerDetail = [];
 
   @override
   void dispose() {
+    employerDetail = null;
     super.dispose();
   }
 
   @override
   void initState() {
     // TODO: implement initState
+    http = AjaxCall.getInstance;
+    userDetail = UserDetail.instance;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      http.post("Registration/GetEmployeeDetails",
+          {"intEmployeeId": userDetail.UserId}).then((result) {
+        if (result != null) {
+          List<dynamic> data = json.decode(result);
+          setState(() {
+            employerDetail = data;
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            employerDetail = null;
+            isLoading = false;
+          });
+          Fluttertoast.showToast(msg: "Fail to get employer detail.");
+        }
+      });
+    });
     super.initState();
   }
 
@@ -33,6 +59,13 @@ class _EmployerDetailState extends State<EmployerDetail> {
       firstDate: DateTime.now().subtract(Duration(days: 100 * 365)),
       lastDate: DateTime.now(),
     );
+  }
+
+  dynamic getValue(String fieldName) {
+    if (this.employerDetail.length > 0) {
+      return this.employerDetail[0][fieldName];
+    }
+    return "";
   }
 
   @override
@@ -54,7 +87,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Insurance Company License No.#',
+                          'Employee Name',
                           style: TextStyle(
                             color: Theme.of(context).accentColor,
                             fontWeight: FontWeight.w600,
@@ -65,7 +98,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Insurance Company License No.#',
+                            labelText: 'Employee Name',
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
@@ -76,12 +109,12 @@ class _EmployerDetailState extends State<EmployerDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: this.getValue('strEmployeeName'),
                           keyboardType: TextInputType.text,
                           onFieldSubmitted: (_) {},
                           validator: (value) {
                             if (value.isEmpty) {
-                              return 'Full name is madatory field';
+                              return 'Employee Name is madatory field';
                             }
                             return null;
                           },
@@ -96,7 +129,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Policy Number',
+                          'Email Id',
                           style: TextStyle(
                             color: Theme.of(context).accentColor,
                             fontWeight: FontWeight.w600,
@@ -107,7 +140,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Policy Number',
+                            labelText: 'Email Id',
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
@@ -118,12 +151,12 @@ class _EmployerDetailState extends State<EmployerDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: this.getValue('strEmployeeEmail'),
                           keyboardType: TextInputType.text,
                           onFieldSubmitted: (_) {},
                           validator: (value) {
                             if (value.isEmpty) {
-                              return 'Full name is madatory field';
+                              return 'Email id is madatory field';
                             }
                             return null;
                           },
@@ -138,7 +171,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Policy Type',
+                          'Mobile No.#',
                           style: TextStyle(
                             color: Theme.of(context).accentColor,
                             fontWeight: FontWeight.w600,
@@ -149,7 +182,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Policy Type',
+                            labelText: 'Mobile No.#',
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
@@ -160,12 +193,12 @@ class _EmployerDetailState extends State<EmployerDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: this.getValue('strEmployeeContactno'),
                           keyboardType: TextInputType.text,
                           onFieldSubmitted: (_) {},
                           validator: (value) {
                             if (value.isEmpty) {
-                              return 'Policy Type is madatory field';
+                              return 'Mobile no. is madatory field';
                             }
                             return null;
                           },
@@ -180,7 +213,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Policy Id',
+                          'Address',
                           style: TextStyle(
                             color: Theme.of(context).accentColor,
                             fontWeight: FontWeight.w600,
@@ -191,7 +224,7 @@ class _EmployerDetailState extends State<EmployerDetail> {
                         ),
                         TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Policy Id',
+                            labelText: 'Address',
                             isDense: true,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(4),
@@ -202,300 +235,18 @@ class _EmployerDetailState extends State<EmployerDetail> {
                             ),
                           ),
                           textAlign: TextAlign.start,
-                          initialValue: '',
+                          initialValue: this.getValue('strEmployeeAddress'),
                           keyboardType: TextInputType.text,
                           onFieldSubmitted: (_) {},
                           validator: (value) {
                             if (value.isEmpty) {
-                              return 'Policy Id is madatory field';
+                              return 'Address is madatory field';
                             }
                             return null;
                           },
                           onSaved: (value) {},
                         ),
                       ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Secondary Policy Indicator',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Secondary Policy Indicator',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          textAlign: TextAlign.start,
-                          initialValue: '',
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Madatory field';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Insurance Company Name',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Insurance Company Name',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          textAlign: TextAlign.start,
-                          initialValue: '',
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Madatory field';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Member Name',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Member Name',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          textAlign: TextAlign.start,
-                          initialValue: '',
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Madatory field';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Health Plan Type',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Health Plan Type',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          textAlign: TextAlign.start,
-                          initialValue: '',
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Madatory field';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Source of Payment',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Source of Payment',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          textAlign: TextAlign.start,
-                          initialValue: '',
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Madatory field';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Secondary Policy Id',
-                          style: TextStyle(
-                            color: Theme.of(context).accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            labelText: 'Secondary Policy Id',
-                            isDense: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(4),
-                              borderSide: const BorderSide(
-                                color: Colors.grey,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          textAlign: TextAlign.start,
-                          initialValue: '',
-                          keyboardType: TextInputType.text,
-                          onFieldSubmitted: (_) {},
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return 'Madatory field';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: Configuration.fieldGap),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10,
-                    ),
-                    child: RaisedButton(
-                      onPressed: () {},
-                      color: Theme.of(context).accentColor,
-                      child: isSubmiting
-                          ? Center(
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
-                                ),
-                              ),
-                            )
-                          : Text(
-                              'Update',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
                     ),
                   ),
                 ],

@@ -30,6 +30,13 @@ class PatientMenu extends StatelessWidget {
             isReplaced: false,
           ),
           DrawerItem(
+            name: 'Calendar',
+            icon: FontAwesome.calendar,
+            nav: NavigationPage.CaregiverCalendar,
+            args: '',
+            isReplaced: false,
+          ),
+          DrawerItem(
             name: 'My health',
             icon: Icons.local_hospital,
             nav: NavigationPage.MyHealth,

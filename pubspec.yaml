@@ -38,7 +38,9 @@ dependencies:
   # autocomplete_textfield: ^1.7.3
   flutter_typeahead: ^1.9.1
   scrollable_positioned_list: ^0.1.8
+  cloud_firestore: ^0.16.0
   # upi_india: ^2.2.0+1
+  url_launcher: ^5.7.10
 
 
   # The following adds the Cupertino Icons font to your application.

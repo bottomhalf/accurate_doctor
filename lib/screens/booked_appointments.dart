@@ -1,4 +1,6 @@
 import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
+import 'package:accurate_doctor/navigation/Constants.dart';
+import 'package:accurate_doctor/widget/common/bottom_navigation.dart';
 import 'package:accurate_doctor/widget/reschedule/widget_stepper.dart';
 import '../widget/common/page_appbar.dart';
 import '../widget/reschedule/my_orders.dart';
@@ -22,7 +24,7 @@ class _ManageRescheduleState extends State<ManageReschedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PageAppBar(
-        pageTitle: 'Reschedule',
+        pageTitle: 'Appointments',
       ),
       body: DefaultTabController(
         length: 2,
@@ -69,6 +71,7 @@ class _ManageRescheduleState extends State<ManageReschedule> {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigation(Tabs.TeleHealth.index),
     );
   }
 }

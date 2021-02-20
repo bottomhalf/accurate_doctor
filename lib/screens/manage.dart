@@ -2,7 +2,6 @@ import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/myHealthItems.dart';
 import 'package:accurate_doctor/widget/common/bottom_navigation.dart';
 import 'package:accurate_doctor/widget/common/page_appbar.dart';
-import 'package:accurate_doctor/widget/drawer/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -29,6 +28,7 @@ class _ManageState extends State<Manage> {
       ),
       child: InkWell(
         onTap: () {
+          print(item.linkedPageName);
           if (item.linkedPageName != null)
             Navigator.of(context).pushNamed(item.linkedPageName);
         },

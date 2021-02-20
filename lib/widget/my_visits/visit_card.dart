@@ -1,3 +1,4 @@
+import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/user_detail.dart';
 import 'package:accurate_doctor/navigation/Constants.dart';
 import 'package:accurate_doctor/services/ajax_call.dart';
@@ -6,10 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+
+const Booked = "booked";
+const Done = "done";
 
 class VisitCard extends StatelessWidget {
   var appointmentDetail;
-  AjaxCall http;
+  AjaxCall http = AjaxCall.getInstance;
   UserDetail userDetail;
   VisitCard({this.appointmentDetail});
 
@@ -35,6 +41,83 @@ class VisitCard extends StatelessWidget {
         Fluttertoast.showToast(msg: ServerError);
       }
     });
+  }
+
+  Future<void> _startZoomMeeting() async {
+    Fluttertoast.showToast(msg: "Loading meeting detail...");
+    const url = 'AppointmentsCommon/InitiateMeeting/pay_GUOL6QAYfQl5xI';
+    http.get(url).then((zoomResult) {
+      if (zoomResult != null) {
+        dynamic result = json.decode(zoomResult);
+        if (result['Join_url'] != null && result['Join_url'] != "") {
+          _launceInBrowser(result['Join_url']);
+        }
+      }
+    });
+  }
+
+  Future<void> _launceInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      Fluttertoast.showToast(msg: "Fail t open");
+    }
+  }
+
+  bool isActiveZoom(String status) {
+    if (status != null && status.trim() != "") {
+      String lStatus = status.toLowerCase();
+      return lStatus == Booked || lStatus == Done;
+    }
+    return false;
+  }
+
+  bool isActivePrescription(String status) {
+    if (status != null && status.trim() != "") {
+      String lStatus = status.toLowerCase();
+      return lStatus == Done;
+    }
+    return false;
+  }
+
+  void _findAttachmentByOrderId(String orderId) {
+    Fluttertoast.showToast(msg: "Loading detail...");
+    if (orderId != null && orderId.trim() != "") {
+      try {
+        int currentOrderId = int.parse(orderId);
+        http.post("AppointmentsCommon/GetMiniConsultationDetails", {
+          "intAppointmentId": currentOrderId,
+          "intCustomerId": 0
+        }).then((apptDetail) {
+          Fluttertoast.showToast(
+              msg: "Please wait. Trying to fetch your data...");
+          if (apptDetail != null) {
+            List<dynamic> apptOrderDetail = json.decode(apptDetail);
+            if (apptOrderDetail != null && apptOrderDetail.length > 0) {
+              int consultationId = apptOrderDetail[0]['intConsultationId'];
+              if (consultationId > 0) {
+                http
+                    .get(
+                        "Common/GetPatientConsultationDetails/${consultationId}",
+                        true)
+                    .then((appt) {
+                  if (appt != null) {
+                    dynamic consltDetail = json.decode(appt);
+                    if (consltDetail != null) {
+                      var linkedFileUrl = consltDetail['strdocumentfullpath'];
+                      _launceInBrowser(linkedFileUrl);
+                    }
+                  }
+                });
+              }
+            }
+          }
+        });
+      } catch (e) {
+        print(
+            'Got error before [AppointmentsCommon/GetMiniConsultationDetails]');
+      }
+    }
   }
 
   @override
@@ -364,7 +447,7 @@ class VisitCard extends StatelessWidget {
                           color: Theme.of(context).dividerColor,
                         ),
                       ),
-                      Row(
+                      /*Row(
                         children: [
                           Text(
                             'Approved by',
@@ -383,10 +466,62 @@ class VisitCard extends StatelessWidget {
                             ),
                           )
                         ],
-                      ),
+                      ),*/
                     ],
                   ),
                   alignment: Alignment.bottomLeft,
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Zoom Link',
+                        style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ),
+                      isActiveZoom(this.appointmentDetail['strStatus'])
+                          ? InkWell(
+                              onTap: () {
+                                _startZoomMeeting();
+                              },
+                              child: Container(
+                                width: 24,
+                                child: Configuration.getImage(
+                                    "http://seniorcare1.healthygx.com/Content/img/VideoChat.png"),
+                              ),
+                            )
+                          : SizedBox(),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Attached Prescription',
+                        style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                        ),
+                      ),
+                      isActivePrescription(this.appointmentDetail['strStatus'])
+                          ? InkWell(
+                              onTap: () {
+                                _findAttachmentByOrderId(
+                                    this.appointmentDetail['strOrderNo']);
+                              },
+                              child: Container(
+                                width: 24,
+                                child: Icon(FontAwesome.file_photo_o),
+                              ),
+                            )
+                          : SizedBox(),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   height: 20,

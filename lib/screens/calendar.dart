@@ -1,8 +1,5 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/widget/caregiver_calendar/calendar.dart';
-import 'package:accurate_doctor/widget/caregiver_calendar/calendar_filter.dart';
-import 'package:accurate_doctor/widget/caregiver_calendar/todays_routine_detail.dart';
-
 import '../widget/common/bottom_navigation.dart';
 import '../widget/common/page_appbar.dart';
 import 'package:flutter/material.dart';

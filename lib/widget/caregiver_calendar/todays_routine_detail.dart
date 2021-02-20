@@ -103,7 +103,9 @@ class TodaysRoutineDetail extends StatelessWidget {
                   padding: const EdgeInsets.all(15),
                   child: Center(
                     child: Text(
-                      '${this.calendarData.elementAt(i)['BookTime']}',
+                      Configuration.isDoctor
+                          ? '${this.calendarData.elementAt(i)['BookTime']}'
+                          : '${this.calendarData.elementAt(i)['strBookTime']}',
                       style: TextStyle(
                         color: Colors.black45,
                       ),
@@ -119,7 +121,9 @@ class TodaysRoutineDetail extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${this.calendarData.elementAt(i)['strAppointmentStatus']}',
+                        Configuration.isDoctor
+                            ? '${this.calendarData.elementAt(i)['strAppointmentStatus']}'
+                            : '${this.calendarData.elementAt(i)['strAppointment_Status']}',
                         style: TextStyle(
                           color: Configuration.ColorFromHex('#31216F'),
                           fontWeight: FontWeight.w600,
@@ -137,7 +141,9 @@ class TodaysRoutineDetail extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '${this.calendarData.elementAt(i)['ReasonforVisit']}',
+                              Configuration.isDoctor
+                                  ? '${this.calendarData.elementAt(i)['ReasonforVisit']}'
+                                  : '${this.calendarData.elementAt(i)['strReasonForVisit']}',
                               style: TextStyle(
                                 color: Configuration.ColorFromHex('#31216F'),
                               ),
@@ -151,13 +157,17 @@ class TodaysRoutineDetail extends StatelessWidget {
                         child: Wrap(
                           children: [
                             Text(
-                              'Patient Name: ',
+                              Configuration.isDoctor
+                                  ? 'Patient Name: '
+                                  : 'Doctor Name: ',
                               style: TextStyle(
                                 color: Colors.grey,
                               ),
                             ),
                             Text(
-                              '${this.calendarData.elementAt(i)['PatientName']}',
+                              Configuration.isDoctor
+                                  ? '${this.calendarData.elementAt(i)['PatientName']}'
+                                  : '${this.calendarData.elementAt(i)['strDoctorName']}',
                               style: TextStyle(
                                 color: Configuration.ColorFromHex('#31216F'),
                               ),

@@ -152,7 +152,7 @@ class _WidgetStepperState extends State<WidgetStepper> {
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
         );
-      case 2:
+      /* case 2:
         return Investigation(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
@@ -175,14 +175,14 @@ class _WidgetStepperState extends State<WidgetStepper> {
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
-        );
-      case 6:
+        );*/
+      case 2:
         return EndConsultation(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,
           MoveTo: _moveTo,
         );
-      case 7:
+      case 3:
         return FeedbackAndRating(
           onSave: _onSave,
           onSaveAndPrint: _onSaveAndPrint,

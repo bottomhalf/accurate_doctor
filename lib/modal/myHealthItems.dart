@@ -29,7 +29,8 @@ class ManageItems {
   List<ItemList> _items = [
     ItemList('Subscription Plans', "assets/img/cover.png", null),
     ItemList('Refill Rx', "assets/img/subs.png", NavigationPage.Subscription),
-    ItemList('Upload documents', "assets/img/upload.png", null),
+    ItemList('Upload documents', "assets/img/upload.png",
+        NavigationPage.LiveChatBox),
   ];
 
   List<ItemList> getItems() {

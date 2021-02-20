@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "841440196271",
+    "project_id": "ipchat-9cc4e",
+    "storage_bucket": "ipchat-9cc4e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841440196271:android:976fd95072077ad48a065a",
+        "android_client_info": {
+          "package_name": "com.bottomhalf.www.accurate_doctor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "841440196271-s74ldvnnsn9pj1va79plcctrrvj018op.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT1w2qACTT6tRjS_TVKgXwibde6ve6P1Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "841440196271-s74ldvnnsn9pj1va79plcctrrvj018op.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

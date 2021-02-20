@@ -26,6 +26,14 @@ class AjaxCall {
     return _baseUrl;
   }
 
+  String getSpecifiedBaseUrl(bool flag) {
+    if (!flag)
+      _baseUrl = "http://iseniorcare1.healthygx.com/api/";
+    else
+      _baseUrl = "http://imobicloud1.healthygx.com/api/";
+    return _baseUrl;
+  }
+
   AjaxCall._internal();
 
   Map<String, String> postHeader() {
@@ -37,7 +45,7 @@ class AjaxCall {
   }
 
   Future<dynamic> post(String url, dynamic data) async {
-    print('Url: ${this.getBaseUrl}, Request: ${json.encode(data)}');
+    print('Url: ${this.getBaseUrl}$url, Request: ${json.encode(data)}');
     try {
       http.Response response = await http.post(this.getBaseUrl + url,
           headers: this.postHeader(), body: json.encode(data));
@@ -73,8 +81,13 @@ class AjaxCall {
     return image;
   }
 
-  Future<String> get(String url) async {
-    http.Response response = await http.get(this.getBaseUrl + url);
+  Future<String> get(String url, [bool isDoctor = false]) async {
+    String serverUrl = "";
+    if (isDoctor)
+      serverUrl = this.getSpecifiedBaseUrl(isDoctor) + url;
+    else
+      serverUrl = this.getBaseUrl + url;
+    http.Response response = await http.get(serverUrl);
     if (response.statusCode == 200 || response.statusCode == 201) {
       print('Response: ${response.body}');
       return response.body;

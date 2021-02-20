@@ -1,10 +1,11 @@
 import 'package:accurate_doctor/screens/billing_payment.dart';
 import 'package:accurate_doctor/screens/book_appointment.dart';
-import 'package:accurate_doctor/screens/caregiver_calendar.dart';
+import 'package:accurate_doctor/screens/calendar.dart';
 import 'package:accurate_doctor/screens/completed_consultation.dart';
 import 'package:accurate_doctor/screens/ehr.dart';
 import 'package:accurate_doctor/screens/health_summary.dart';
 import 'package:accurate_doctor/screens/invoice_report.dart';
+import 'package:accurate_doctor/screens/live_chat.dart';
 import 'package:accurate_doctor/screens/loading_screen.dart';
 import 'package:accurate_doctor/screens/manage.dart';
 import 'package:accurate_doctor/screens/manage_doctor.dart';
@@ -17,9 +18,10 @@ import 'package:accurate_doctor/screens/notification.dart';
 import 'package:accurate_doctor/screens/subscription.dart';
 import 'package:accurate_doctor/screens/upload_consultation.dart';
 import 'package:accurate_doctor/widget/reschedule/appointment_reports.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import './modal/Configuration.dart';
-import './screens/reschedule.dart';
+import './screens/booked_appointments.dart';
 import './screens/my_health.dart';
 import './screens/billing_and_payment.dart';
 import './screens/second_opinion.dart';
@@ -36,8 +38,17 @@ import './screens/opt_Varification.dart';
 import './screens/signup.dart';
 import 'package:flutter/material.dart';
 import './navigation/NavigationPage.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+bool USE_FIRESTORE_EMULATOR = false;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
+  if (USE_FIRESTORE_EMULATOR) {
+    FirebaseFirestore.instance.settings = Settings(
+        host: 'localhost:8080', sslEnabled: false, persistenceEnabled: false);
+  }
   runApp(
     MultiProvider(
       providers: [
@@ -123,6 +134,7 @@ class MyApp extends StatelessWidget {
         NavigationPage.MyService: (_) => MyServicePage(),
         NavigationPage.BillingAngPaymentPage: (_) => BillingAndPaymentPage(),
         NavigationPage.ManageSchedule: (_) => ManageSchedulePage(),
+        NavigationPage.LiveChatBox: (_) => LiveChat(),
       },
       onUnknownRoute: (setting) {
         return MaterialPageRoute(builder: (ctx) => LoadingScreen());
