@@ -43,17 +43,20 @@ class VisitCard extends StatelessWidget {
     });
   }
 
-  Future<void> _startZoomMeeting() async {
-    Fluttertoast.showToast(msg: "Loading meeting detail...");
-    const url = 'AppointmentsCommon/InitiateMeeting/pay_GUOL6QAYfQl5xI';
-    http.get(url).then((zoomResult) {
-      if (zoomResult != null) {
-        dynamic result = json.decode(zoomResult);
-        if (result['Join_url'] != null && result['Join_url'] != "") {
-          _launceInBrowser(result['Join_url']);
+  Future<void> _startZoomMeeting(String JoinUrl) async {
+    if(JoinUrl != null) {
+      Fluttertoast.showToast(msg: "Loading meeting detail...");
+      http.get('AppointmentsCommon/InitiateMeeting/${JoinUrl}').then((zoomResult) {
+        if (zoomResult != null) {
+          dynamic result = json.decode(zoomResult);
+          if (result['Join_url'] != null && result['Join_url'] != "") {
+            _launceInBrowser(result['Join_url']);
+          }
         }
-      }
-    });
+      });
+    } else {
+      Fluttertoast.showToast(msg: "Zoom join url not available.");
+    }
   }
 
   Future<void> _launceInBrowser(String url) async {
@@ -485,7 +488,7 @@ class VisitCard extends StatelessWidget {
                       isActiveZoom(this.appointmentDetail['strStatus'])
                           ? InkWell(
                               onTap: () {
-                                _startZoomMeeting();
+                                _startZoomMeeting(this.appointmentDetail['Join_url']);
                               },
                               child: Container(
                                 width: 24,

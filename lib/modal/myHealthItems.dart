@@ -30,7 +30,7 @@ class ManageItems {
     ItemList('Subscription Plans', "assets/img/cover.png", null),
     ItemList('Refill Rx', "assets/img/subs.png", NavigationPage.Subscription),
     ItemList('Upload documents', "assets/img/upload.png",
-        NavigationPage.LiveChatBox),
+        null),
   ];
 
   List<ItemList> getItems() {
