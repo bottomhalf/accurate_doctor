@@ -36,11 +36,9 @@ class _PatientListState extends State<PatientList> {
     super.initState();
     http = AjaxCall.getInstance;
     userDetail = UserDetail.instance;
-    print('UserId: ${userDetail.UserId}');
     setState(() {
       this.isLoading = true;
     });
-    print('organization id: ${userDetail.strOrganization}');
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       this.http.post("Common/GetAppointmentDetails", {
         "Start_Date": DateFormat('yyyy-MM-dd').format(DateTime.now()),

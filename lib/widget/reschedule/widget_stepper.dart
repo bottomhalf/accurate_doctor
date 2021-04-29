@@ -1,17 +1,14 @@
 import 'package:accurate_doctor/modal/Configuration.dart';
 import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
+import 'package:accurate_doctor/modal/order_consultation_model.dart';
 import 'package:accurate_doctor/widget/common/circular_wizard_box.dart';
 import 'package:accurate_doctor/widget/reschedule/appointment_reports.dart';
 import 'package:accurate_doctor/widget/reschedule/completed_appointment.dart';
 import 'package:accurate_doctor/widget/reschedule/completed_assesments.dart';
 import 'package:accurate_doctor/widget/reschedule/end_consultation.dart';
 import 'package:accurate_doctor/widget/reschedule/feedback_rating.dart';
-import 'package:accurate_doctor/widget/reschedule/investigation.dart';
-import 'package:accurate_doctor/widget/reschedule/medical_history.dart';
-import 'package:accurate_doctor/widget/reschedule/medication.dart';
 import 'package:accurate_doctor/widget/reschedule/patient_list.dart';
 import 'package:accurate_doctor/widget/reschedule/start_consultation.dart';
-import 'package:accurate_doctor/widget/reschedule/vital_history.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -32,10 +29,12 @@ class _WidgetStepperState extends State<WidgetStepper> {
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
   List<RescheduleDataModal> itemModalDetail;
+  OrderConsultationModel orderConsultationModel;
 
   @override
   void initState() {
     this.itemModalDetail = widget.items;
+    super.initState();
   }
 
   void moveNext() {

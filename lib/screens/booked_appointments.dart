@@ -1,10 +1,10 @@
 import 'package:accurate_doctor/modal/RescheduleDataModal.dart';
+import 'package:accurate_doctor/modal/order_consultation_model.dart';
 import 'package:accurate_doctor/navigation/Constants.dart';
 import 'package:accurate_doctor/widget/common/bottom_navigation.dart';
 import 'package:accurate_doctor/widget/reschedule/widget_stepper.dart';
+import 'package:provider/provider.dart';
 import '../widget/common/page_appbar.dart';
-import '../widget/reschedule/my_orders.dart';
-import '../widget/reschedule/order_history.dart';
 import 'package:flutter/material.dart';
 
 class ManageReschedule extends StatefulWidget {
@@ -54,9 +54,12 @@ class _ManageRescheduleState extends State<ManageReschedule> {
                 child: TabBarView(
                   children: [
                     Container(
-                      child: WidgetStepper(
-                        items: rescheduleDataModal.getBuildModal(true),
-                        isMyOrder: true,
+                      child: ChangeNotifierProvider(
+                        create: (_) => OrderConsultationModel(),
+                        child: WidgetStepper(
+                          items: rescheduleDataModal.getBuildModal(true),
+                          isMyOrder: true,
+                        ),
                       ),
                     ),
                     //OrderHistory(),

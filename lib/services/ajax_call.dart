@@ -110,4 +110,18 @@ class AjaxCall {
     print('Image status code: ${res.statusCode}');
     return res.reasonPhrase;
   }
+
+  Future<String> submitFormWithImage(
+      File imageFile, String args, String uri) async {
+    print('Uri: $uri and Args: $args');
+    var fullUrl = Uri.parse(this._baseUrl + uri);
+    var request = http.MultipartRequest('POST', fullUrl)
+      ..fields['Id'] = args
+      ..files.add(
+          await http.MultipartFile.fromPath('UploadedImage', imageFile.path));
+
+    var res = await request.send();
+    print('Image status code: ${res.statusCode}');
+    return res.reasonPhrase;
+  }
 }

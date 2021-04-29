@@ -39,7 +39,7 @@ class SaveState extends StatelessWidget {
                   color: Theme.of(context).accentColor,
                 ),
               ),
-              onPressed: onSaveAndPrint,
+              onPressed: onSave,
             ),
           ),
           Container(
@@ -58,7 +58,7 @@ class SaveState extends StatelessWidget {
                   color: Theme.of(context).accentColor,
                 ),
               ),
-              onPressed: onSave,
+              onPressed: onSaveAndPrint,
             ),
           ),
         ],
