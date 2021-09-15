@@ -13,26 +13,43 @@ import 'dart:convert';
 const Booked = "booked";
 const Done = "done";
 
-class VisitCard extends StatelessWidget {
+class VisitCard extends StatefulWidget {
   var appointmentDetail;
+
+  VisitCard({this.appointmentDetail});
+
+  @override
+  _VisitCardState createState() => _VisitCardState();
+}
+
+class _VisitCardState extends State<VisitCard> {
   AjaxCall http = AjaxCall.getInstance;
   UserDetail userDetail;
-  VisitCard({this.appointmentDetail});
+  bool isLoading;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    setState(() {
+      this.isLoading = false;
+    });
+    super.initState();
+  }
 
   void _cancelAppointment() {
     userDetail = UserDetail.instance;
     http.post("AppointmentDetails/OrderCancelnonorgAppointmentDetails", {
-      "strOrderNo": appointmentDetail['strOrderNo'],
+      "strOrderNo": widget.appointmentDetail['strOrderNo'],
       "intmodifiedby": userDetail.UserId,
-      "strName": appointmentDetail['strName'],
-      "strEmail": appointmentDetail['strEmail'],
-      "strMobileNo": appointmentDetail['strMobileNo'],
+      "strName": widget.appointmentDetail['strName'],
+      "strEmail": widget.appointmentDetail['strEmail'],
+      "strMobileNo": widget.appointmentDetail['strMobileNo'],
       "strCustomerEmailId": userDetail.Email,
       "strCustomerMobileNo": userDetail.MobileNo,
-      "strCustomerName": appointmentDetail['strCustomerName'],
-      "strBookTime": appointmentDetail['strBookTime'],
+      "strCustomerName": widget.appointmentDetail['strCustomerName'],
+      "strBookTime": widget.appointmentDetail['strBookTime'],
       "strScheduleDate": "02/10/2020",
-      "intCategoryId": appointmentDetail['intCategoryId'],
+      "intCategoryId": widget.appointmentDetail['intCategoryId'],
       "straddress": "Dayanand clinic,Hyderabad"
     }).then((value) {
       if (value != null) {
@@ -43,16 +60,30 @@ class VisitCard extends StatelessWidget {
     });
   }
 
-  Future<void> _startZoomMeeting(String JoinUrl) async {
-    if(JoinUrl != null) {
+  Future<void> _startZoomMeeting(String strPaymentId) async {
+    if (strPaymentId != null && strPaymentId != "") {
+      setState(() {
+        isLoading = true;
+      });
+
       Fluttertoast.showToast(msg: "Loading meeting detail...");
-      http.get('AppointmentsCommon/InitiateMeeting/${JoinUrl}').then((zoomResult) {
+      http
+          .get('AppointmentsCommon/InitiateMeeting/${strPaymentId}')
+          .then((zoomResult) {
         if (zoomResult != null) {
           dynamic result = json.decode(zoomResult);
           if (result['Join_url'] != null && result['Join_url'] != "") {
+            setState(() {
+              isLoading = false;
+            });
             _launceInBrowser(result['Join_url']);
           }
         }
+      }).catchError((error) {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: "Got error. Please contact to admin.");
       });
     } else {
       Fluttertoast.showToast(msg: "Zoom join url not available.");
@@ -69,8 +100,7 @@ class VisitCard extends StatelessWidget {
 
   bool isActiveZoom(String status) {
     if (status != null && status.trim() != "") {
-      String lStatus = status.toLowerCase();
-      return lStatus == Booked || lStatus == Done;
+      return true;
     }
     return false;
   }
@@ -143,7 +173,7 @@ class VisitCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${this.appointmentDetail['strName']} [ ${this.appointmentDetail['strOrderNo']} #]',
+                  '${this.widget.appointmentDetail['strName']} [ ${this.widget.appointmentDetail['strOrderNo']} #]',
                   style: TextStyle(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
@@ -164,7 +194,7 @@ class VisitCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  this.appointmentDetail['strServiceType'],
+                  this.widget.appointmentDetail['strServiceType'],
                   style: TextStyle(
                     color: Theme.of(context).dividerColor,
                     fontSize: 10,
@@ -182,7 +212,7 @@ class VisitCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  this.appointmentDetail['strOrderDate'],
+                  this.widget.appointmentDetail['strOrderDate'],
                   style: TextStyle(
                     color: Theme.of(context).dividerColor,
                     fontSize: 10,
@@ -246,14 +276,14 @@ class VisitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        this.appointmentDetail['strName'],
+                        this.widget.appointmentDetail['strName'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        this.appointmentDetail['strServiceType'],
+                        this.widget.appointmentDetail['strServiceType'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
@@ -288,14 +318,14 @@ class VisitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        this.appointmentDetail['strOrderNo'],
+                        this.widget.appointmentDetail['strOrderNo'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        this.appointmentDetail['BookedBy'],
+                        this.widget.appointmentDetail['BookedBy'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
@@ -330,14 +360,14 @@ class VisitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        this.appointmentDetail['strOrderDate'],
+                        this.widget.appointmentDetail['strOrderDate'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        this.appointmentDetail['strScheduleDate'],
+                        this.widget.appointmentDetail['strScheduleDate'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
@@ -372,14 +402,14 @@ class VisitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        this.appointmentDetail['strBookTime'],
+                        this.widget.appointmentDetail['strBookTime'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        this.appointmentDetail['strStatus'],
+                        this.widget.appointmentDetail['strStatus'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
@@ -414,14 +444,14 @@ class VisitCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        this.appointmentDetail['strPrice'],
+                        this.widget.appointmentDetail['strPrice'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
                         ),
                       ),
                       Text(
-                        this.appointmentDetail['strPrice'],
+                        this.widget.appointmentDetail['strPrice'],
                         style: TextStyle(
                           color: Theme.of(context).dividerColor,
                           fontSize: 12,
@@ -451,25 +481,25 @@ class VisitCard extends StatelessWidget {
                         ),
                       ),
                       /*Row(
-                        children: [
-                          Text(
-                            'Approved by',
-                            style: TextStyle(
-                              color: Theme.of(context).dividerColor,
+                          children: [
+                            Text(
+                              'Approved by',
+                              style: TextStyle(
+                                color: Theme.of(context).dividerColor,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Dr Divya',
-                            style: TextStyle(
-                              color: Theme.of(context).accentColor,
-                              fontWeight: FontWeight.w600,
+                            SizedBox(
+                              width: 5,
                             ),
-                          )
-                        ],
-                      ),*/
+                            Text(
+                              'Dr Divya',
+                              style: TextStyle(
+                                color: Theme.of(context).accentColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
+                          ],
+                        ),*/
                     ],
                   ),
                   alignment: Alignment.bottomLeft,
@@ -485,15 +515,27 @@ class VisitCard extends StatelessWidget {
                           color: Theme.of(context).accentColor,
                         ),
                       ),
-                      isActiveZoom(this.appointmentDetail['strStatus'])
+                      isActiveZoom(
+                              this.widget.appointmentDetail['strPaymentId'])
                           ? InkWell(
                               onTap: () {
-                                _startZoomMeeting(this.appointmentDetail['Join_url']);
+                                _startZoomMeeting(this
+                                    .widget
+                                    .appointmentDetail['strPaymentId']);
                               },
                               child: Container(
                                 width: 24,
-                                child: Configuration.getImage(
-                                    "http://seniorcare1.healthygx.com/Content/img/VideoChat.png"),
+                                height: 24,
+                                child: isLoading
+                                    ? Center(
+                                        child: CircularProgressIndicator(
+                                          backgroundColor: Colors.white,
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Configuration.getImage(
+                                            "http://uaecustomer2.accuratedoctor.com/Content/img/VideoChat.png"),
+                                      ),
                               ),
                             )
                           : SizedBox(),
@@ -511,11 +553,13 @@ class VisitCard extends StatelessWidget {
                           color: Theme.of(context).accentColor,
                         ),
                       ),
-                      isActivePrescription(this.appointmentDetail['strStatus'])
+                      isActivePrescription(
+                              this.widget.appointmentDetail['strStatus'])
                           ? InkWell(
                               onTap: () {
-                                _findAttachmentByOrderId(
-                                    this.appointmentDetail['strOrderNo']);
+                                _findAttachmentByOrderId(this
+                                    .widget
+                                    .appointmentDetail['strOrderNo']);
                               },
                               child: Container(
                                 width: 24,

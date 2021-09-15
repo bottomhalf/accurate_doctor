@@ -20,7 +20,7 @@ class AjaxCall {
 
   get getBaseUrl {
     if (!Configuration.isDoctor)
-      _baseUrl = "http://iseniorcare1.healthygx.com/api/";
+      _baseUrl = "http://iuaecustomer2.accuratedoctor.com/api/";
     else
       _baseUrl = "http://imobicloud1.healthygx.com/api/";
     return _baseUrl;
@@ -28,7 +28,7 @@ class AjaxCall {
 
   String getSpecifiedBaseUrl(bool flag) {
     if (!flag)
-      _baseUrl = "http://iseniorcare1.healthygx.com/api/";
+      _baseUrl = "http://iuaecustomer2.accuratedoctor.com/api/";
     else
       _baseUrl = "http://imobicloud1.healthygx.com/api/";
     return _baseUrl;

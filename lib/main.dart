@@ -18,6 +18,7 @@ import 'package:accurate_doctor/screens/notification.dart';
 import 'package:accurate_doctor/screens/subscription.dart';
 import 'package:accurate_doctor/screens/upload_consultation.dart';
 import 'package:accurate_doctor/widget/reschedule/appointment_reports.dart';
+import './widget/reschedule/appointment_reports.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import './modal/Configuration.dart';

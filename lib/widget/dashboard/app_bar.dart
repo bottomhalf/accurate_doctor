@@ -21,7 +21,8 @@ class DashboardAppBar extends StatefulWidget with PreferredSizeWidget {
       this.searchResult,
       this.isFocused = false,
       this.defaultSearchText})
-      : preferredSize = Size.fromHeight(Configuration.height * .25),
+      : preferredSize = Size.fromHeight(
+            Configuration.height * .20), // previous value = 0.25
         super(key: key);
 
   @override
@@ -71,7 +72,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
           ),
         ),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(40.0),
+          preferredSize: Size.fromHeight(20.0),
           child: Column(
             children: [
               Container(
@@ -88,28 +89,28 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                 ),
               ),
               HeaderBar(this.userDetail?.firstName, 'India'),
-              Material(
-                elevation: 4,
-                child: Container(
-                  height: Configuration.height * .06,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0,
-                    ),
-                  ),
-                  width: Configuration.width,
-                  child: ListView.builder(
-                    itemCount: itemCount,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (ctx, index) {
-                      return HeaderNavBar(
-                        headerMenuItem[index]['key'],
-                        headerMenuItem[index]['value'],
-                      );
-                    },
-                  ),
-                ),
-              ),
+              // Material(
+              //   elevation: 4,
+              //   child: Container(
+              //     height: Configuration.height * .06,
+              //     decoration: BoxDecoration(
+              //       border: Border.all(
+              //         width: 0,
+              //       ),
+              //     ),
+              //     width: Configuration.width,
+              //     child: ListView.builder(
+              //       itemCount: itemCount,
+              //       scrollDirection: Axis.horizontal,
+              //       itemBuilder: (ctx, index) {
+              //         return HeaderNavBar(
+              //           headerMenuItem[index]['key'],
+              //           headerMenuItem[index]['value'],
+              //         );
+              //       },
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
